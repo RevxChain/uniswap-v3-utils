@@ -1,0 +1,8 @@
+[submodule "lib/uniswap-v3-periphery-0.8"]
+	path = lib/uniswap-v3-periphery-0.8
+	url = https://github.com/Uniswap/v3-periphery
+	branch = 0.8
+[submodule "lib/sir-trading-core"]
+	path = lib/sir-trading-core
+	url = https://github.com/SIR-trading/Core
+	branch = master
