@@ -6,3 +6,11 @@
 	path = lib/sir-trading-core
 	url = https://github.com/SIR-trading/Core
 	branch = master
+[submodule "lib/multicall"]
+	path = lib/multicall
+	url = https://github.com/sky-ecosystem/multicall
+	branch = master
+[submodule "lib/permit2"]
+	path = lib/permit2
+	url = https://github.com/Uniswap/permit2
+	branch = main

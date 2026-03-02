@@ -3,6 +3,8 @@ require("hardhat-contract-sizer");
 require("hardhat-gas-reporter");
 require('dotenv').config();
 
+const compilers = require("./solc.compilers.json");
+
 module.exports = {
     defaultNetwork: "hardhat",
     networks: {
@@ -81,16 +83,14 @@ module.exports = {
             },
         ],
         overrides: {
-            "contracts/mocks/WETH.sol": {
-                version: "0.4.18",
-                settings: {
-                    viaIR: false,
-                    evmVersion: "spuriousDragon",
-                    optimizer: {
-                        enabled: false
-                    },
-                },
-            },
+            "contracts/mocks/WETH.sol": compilers.weth,
+            "contracts/mocks/Multicall2.sol": compilers.multicall2,
+            "contracts/mocks/Permit2.sol": compilers.permit2,
+            "lib/permit2/src/Permit2.sol": compilers.permit2,
+            "lib/permit2/src/AllowanceTransfer.sol": compilers.permit2,
+            "lib/permit2/src/SignatureTransfer.sol": compilers.permit2,
+            "lib/permit2/src/EIP712.sol": compilers.permit2,
+            "lib/permit2/src/PermitErrors.sol": compilers.permit2,
         },
     },
 

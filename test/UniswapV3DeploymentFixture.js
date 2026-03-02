@@ -34,8 +34,8 @@ function createUniswapV3DeploymentFixtureCustomWETH(weth) {
             require('@uniswap/v3-periphery-0.7/artifacts/contracts/libraries/NFTDescriptor.sol/NFTDescriptor.json').bytecode,
             uniswapV3Deployer
         );
-        const NFTDescriptorLibrary = await NFTDescriptor.deploy();
-        await NFTDescriptorLibrary.waitForDeployment();
+        const descriptorLibrary = await NFTDescriptor.deploy();
+        await descriptorLibrary.waitForDeployment();
 
         const NonfungibleTokenPositionDescriptor = new ethers.ContractFactory(
             require(
@@ -43,7 +43,7 @@ function createUniswapV3DeploymentFixtureCustomWETH(weth) {
             ).abi,
             require(
                 '@uniswap/v3-periphery-0.7/artifacts/contracts/NonfungibleTokenPositionDescriptor.sol/NonfungibleTokenPositionDescriptor.json'
-            ).bytecode.replace("__$cea9be979eee3d87fb124d6cbb244bb0b5$__", NFTDescriptorLibrary.target.slice(2)),
+            ).bytecode.replace("__$cea9be979eee3d87fb124d6cbb244bb0b5$__", descriptorLibrary.target.slice(2)),
             uniswapV3Deployer
         );
         const tokenDescriptor = await NonfungibleTokenPositionDescriptor.deploy(weth.target, nativeCurrencyLabel);
@@ -102,11 +102,20 @@ function createUniswapV3DeploymentFixtureCustomWETH(weth) {
             require('@uniswap/v3-periphery-0.7/artifacts/contracts/lens/UniswapInterfaceMulticall.sol/UniswapInterfaceMulticall.json').bytecode,
             uniswapV3Deployer
         );
-        const interfaceMulticall = await UniswapInterfaceMulticall.deploy();
-        await interfaceMulticall.waitForDeployment();
+        const multicall = await UniswapInterfaceMulticall.deploy();
+        await multicall.waitForDeployment();
+
+        const Multicall2 = await ethers.getContractFactory("Multicall2", uniswapV3Deployer);
+        const multicall2 = await Multicall2.deploy();
+        await multicall2.waitForDeployment();
+
+        const Permit2 = await ethers.getContractFactory("Permit2", uniswapV3Deployer);
+        const permit2 = await Permit2.deploy();
+        await permit2.waitForDeployment();
 
         return {
-            uniswapV3Deployer, weth, uniswapFactory, tokenDescriptor, positionManager, swapRouter01, swapRouter02, quoter01, quoter02, tickLens, interfaceMulticall
+            uniswapV3Deployer, weth, uniswapFactory, descriptorLibrary, tokenDescriptor, positionManager, swapRouter01, swapRouter02, quoter01, quoter02, 
+            tickLens, multicall, multicall2, permit2
         };
     }
 
