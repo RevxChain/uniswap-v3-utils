@@ -14,7 +14,7 @@ describe("FixturesTest", function () {
         expect(await quoter01.WETH9()).to.equal(weth.target);
         expect(await quoter02.WETH9()).to.equal(weth.target);
 
-        expect(await weth.name()).to.equal("Wrapped ETH");
+        expect(await weth.name()).to.equal("Wrapped Ether");
         expect(await weth.symbol()).to.equal("WETH");
         expect(await weth.decimals()).to.equal(18n);
         expect(await weth.totalSupply()).to.equal(0n);
@@ -23,8 +23,8 @@ describe("FixturesTest", function () {
     it("Custom WETH fixture", async function () {
         const [user] = await ethers.getSigners();
 
-        const WETH = await ethers.getContractFactory("WETH", user);
-        const wethPreDeploy = await WETH.deploy();
+        const WETH9 = new ethers.ContractFactory(require('../build/WETH9.json').abi, require('../build/WETH9.json').bytecode, user);
+        const wethPreDeploy = await WETH9.deploy();
         await wethPreDeploy.waitForDeployment();
 
         await wethPreDeploy.connect(user).deposit({ value: withDecimals("9000") });
@@ -42,7 +42,7 @@ describe("FixturesTest", function () {
         expect(await quoter01.WETH9()).to.equal(weth.target);
         expect(await quoter02.WETH9()).to.equal(weth.target);
 
-        expect(await weth.name()).to.equal("Wrapped ETH");
+        expect(await weth.name()).to.equal("Wrapped Ether");
         expect(await weth.symbol()).to.equal("WETH");
         expect(await weth.decimals()).to.equal(18n);
         expect(await weth.totalSupply()).to.equal(withDecimals("9000"));

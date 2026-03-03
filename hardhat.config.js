@@ -83,7 +83,6 @@ module.exports = {
             },
         ],
         overrides: {
-            "contracts/mocks/WETH.sol": compilers.weth,
             "contracts/mocks/Multicall2.sol": compilers.multicall2,
             "contracts/mocks/Permit2.sol": compilers.permit2,
             "lib/permit2/src/Permit2.sol": compilers.permit2,

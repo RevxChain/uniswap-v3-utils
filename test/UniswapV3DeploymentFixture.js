@@ -4,8 +4,8 @@ const { zeroAddress } = require("./Utils");
 async function UniswapV3DeploymentFixture() {
     const [, , , , , , , , , , , , , , , , , , , uniswapV3Deployer] = await ethers.getSigners();
 
-    const WETH = await ethers.getContractFactory("WETH", uniswapV3Deployer);
-    const weth = await WETH.deploy();
+    const WETH9 = new ethers.ContractFactory(require('../build/WETH9.json').abi, require('../build/WETH9.json').bytecode, uniswapV3Deployer);
+    const weth = await WETH9.deploy();
     await weth.waitForDeployment();
 
     const UniswapV3DeploymentFixtureCustomWETH = createUniswapV3DeploymentFixtureCustomWETH(weth);
@@ -105,16 +105,24 @@ function createUniswapV3DeploymentFixtureCustomWETH(weth) {
         const multicall = await UniswapInterfaceMulticall.deploy();
         await multicall.waitForDeployment();
 
-        const Multicall2 = await ethers.getContractFactory("Multicall2", uniswapV3Deployer);
+        const Multicall2 = new ethers.ContractFactory(
+            require('../build/Multicall2.json').abi,
+            require('../build/Multicall2.json').bytecode,
+            uniswapV3Deployer
+        );
         const multicall2 = await Multicall2.deploy();
         await multicall2.waitForDeployment();
 
-        const Permit2 = await ethers.getContractFactory("Permit2", uniswapV3Deployer);
+        const Permit2 = new ethers.ContractFactory(
+            require('../build/Permit2.json').abi,
+            require('../build/Permit2.json').bytecode,
+            uniswapV3Deployer
+        );
         const permit2 = await Permit2.deploy();
         await permit2.waitForDeployment();
 
         return {
-            uniswapV3Deployer, weth, uniswapFactory, descriptorLibrary, tokenDescriptor, positionManager, swapRouter01, swapRouter02, quoter01, quoter02, 
+            uniswapV3Deployer, weth, uniswapFactory, descriptorLibrary, tokenDescriptor, positionManager, swapRouter01, swapRouter02, quoter01, quoter02,
             tickLens, multicall, multicall2, permit2
         };
     }
