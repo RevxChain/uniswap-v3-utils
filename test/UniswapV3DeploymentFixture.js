@@ -130,4 +130,72 @@ function createUniswapV3DeploymentFixtureCustomWETH(weth) {
     return UniswapV3DeploymentFixtureCustomWETH;
 }
 
-module.exports = { UniswapV3DeploymentFixture, createUniswapV3DeploymentFixtureCustomWETH };
+async function UniswapV3MainnetForkSetup(chainId) {
+
+    const addresses = require('../uniswap.addresses.json')[chainId.toString()];
+
+    const weth = await ethers.getContractAt(require('../build/WETH9.json').abi, addresses.wethAddress);
+
+    const uniswapFactory = await ethers.getContractAt(
+        require('@uniswap/v3-core-0.7/artifacts/contracts/UniswapV3Factory.sol/UniswapV3Factory.json').abi,
+        addresses.uniswapFactoryAddress
+    );
+
+    const descriptorLibrary = await ethers.getContractAt(
+        require('@uniswap/v3-periphery-0.7/artifacts/contracts/libraries/NFTDescriptor.sol/NFTDescriptor.json').abi,
+        addresses.descriptorLibraryAddress
+    );
+
+    const tokenDescriptor = await ethers.getContractAt(
+        require(
+            '@uniswap/v3-periphery-0.7/artifacts/contracts/NonfungibleTokenPositionDescriptor.sol/NonfungibleTokenPositionDescriptor.json'
+        ).abi,
+        addresses.tokenDescriptorAddress
+    );
+
+    const positionManager = await ethers.getContractAt(
+        require('@uniswap/v3-periphery-0.7/artifacts/contracts/NonfungiblePositionManager.sol/NonfungiblePositionManager.json').abi,
+        addresses.positionManagerAddress
+    );
+
+    const swapRouter01 = await ethers.getContractAt(
+        require('@uniswap/v3-periphery-0.7/artifacts/contracts/SwapRouter.sol/SwapRouter.json').abi,
+        addresses.swapRouter01Address
+    );
+
+    const swapRouter02 = await ethers.getContractAt(
+        require('@uniswap/swap-router-contracts/artifacts/contracts/SwapRouter02.sol/SwapRouter02.json').abi,
+        addresses.swapRouter02Address
+    );
+
+    const quoter01 = await ethers.getContractAt(
+        require('@uniswap/v3-periphery-0.7/artifacts/contracts/lens/Quoter.sol/Quoter.json').abi,
+        addresses.quoter01Address
+    );
+
+    const quoter02 = await ethers.getContractAt(
+        require('@uniswap/v3-periphery-0.7/artifacts/contracts/lens/QuoterV2.sol/QuoterV2.json').abi,
+        addresses.quoter02Address
+    );
+
+    const tickLens = await ethers.getContractAt(
+        require('@uniswap/v3-periphery-0.7/artifacts/contracts/lens/TickLens.sol/TickLens.json').abi,
+        addresses.tickLensAddress
+    );
+
+    const multicall = await ethers.getContractAt(
+        require('@uniswap/v3-periphery-0.7/artifacts/contracts/lens/UniswapInterfaceMulticall.sol/UniswapInterfaceMulticall.json').abi,
+        addresses.multicallAddress
+    );
+
+    const multicall2 = await ethers.getContractAt(require('../build/Multicall2.json').abi, addresses.multicall2Address);
+
+    const permit2 = await ethers.getContractAt(require('../build/Permit2.json').abi, addresses.permit2Address);
+
+    return {
+        weth, uniswapFactory, descriptorLibrary, tokenDescriptor, positionManager, swapRouter01, swapRouter02, quoter01, quoter02,
+        tickLens, multicall, multicall2, permit2
+    };
+}
+
+module.exports = { UniswapV3MainnetForkSetup, UniswapV3DeploymentFixture, createUniswapV3DeploymentFixtureCustomWETH };

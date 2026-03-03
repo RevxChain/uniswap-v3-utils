@@ -3,6 +3,10 @@ const { loadFixture } = require("@nomicfoundation/hardhat-network-helpers");
 const { withDecimals } = require("./Utils");
 const { expect } = require("chai");
 
+if (require('../hardhat.config.js').networks.hardhat.forking.enabled) {
+    return;
+}
+
 describe("FixturesTest", function () {
     it("Default fixture", async function () {
         const { weth, tokenDescriptor, positionManager, swapRouter01, swapRouter02, quoter01, quoter02 } = await loadFixture(UniswapV3DeploymentFixture);
