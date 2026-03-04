@@ -102,4 +102,19 @@ contract UniswapV3UtilsMock {
         return tick.getSqrtRatioAtTick();
     }
 
+    function MAX_TICK() external pure returns(int24 maxTick) {
+        return TickMath.MAX_TICK;
+    }
+
+    function MIN_TICK() external pure returns(int24 minTick) {
+        return TickMath.MIN_TICK;
+    }
+
+    function MAX_SQRT_RATIO() external pure returns(uint160 maxSqrtRatio) {
+        return TickMath.MAX_SQRT_RATIO;
+    }
+
+    function MIN_SQRT_RATIO() external pure returns(uint160 minSqrtRatio) {
+        return TickMath.MIN_SQRT_RATIO;
+    }
 }

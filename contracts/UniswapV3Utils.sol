@@ -96,7 +96,7 @@ library UniswapV3Utils {
         uint256 amount0,
         uint256 amount1
     ) internal pure returns(uint160 upperSqrtPriceX96) {
-        uint256 _liquidity = amount1.mulDiv(FixedPoint96.Q96, uint256(currentSqrtPriceX96) - uint256(lowerSqrtPriceX96));
+        uint256 _liquidity = amount1.mulDiv(FixedPoint96.Q96, uint256(currentSqrtPriceX96 - lowerSqrtPriceX96));
         uint256 _numerator = _liquidity.mulDiv(uint256(currentSqrtPriceX96), FixedPoint96.Q96);
         uint256 _denominator = amount0.mulDiv(uint256(currentSqrtPriceX96), FixedPoint96.Q96);
 
@@ -105,7 +105,7 @@ library UniswapV3Utils {
         (bool _success, uint256 _upperSqrtPriceX96) = _numerator.tryMulDiv(FixedPoint96.Q96, _denominator);
 
         if (_success && TickMath.MAX_SQRT_RATIO > _upperSqrtPriceX96) {
-            return uint160(_upperSqrtPriceX96);
+            return _upperSqrtPriceX96 > currentSqrtPriceX96 ? uint160(_upperSqrtPriceX96) : currentSqrtPriceX96;
         } else {
             return TickMath.MAX_SQRT_RATIO - 1;
         }

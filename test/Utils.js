@@ -20,6 +20,10 @@ function getRandomValue(min, max) {
 }
 
 function getRandomInt(max) {
+    return BigInt(Math.floor(Math.random() * max));
+}
+
+function getRandomInt3(max) {
     return BigInt(Math.floor(Math.random() * max) + 3);
 }
 
@@ -103,6 +107,6 @@ async function createUniswapPool(
 };
 
 module.exports = {
-    getSqrtPriceX96, convert, getRandomValue, getRandomInt, createUniswapPool, anyValue, time, AbiCoder, withDecimals, zeroAddress, zeroHash, 
+    getSqrtPriceX96, convert, getRandomValue, getRandomInt, getRandomInt3, createUniswapPool, anyValue, time, AbiCoder, withDecimals, zeroAddress, zeroHash,
     uniswapV3PoolBytecode, uniswapV3PoolAbi
 };
