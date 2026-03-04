@@ -108,6 +108,9 @@ describe("UniswapV3Utils", function () {
                 let lowerSqrtPriceX96 = getRandomInt(Number(currentSqrtPriceX96) - 1);
                 if (minSqrtRatio > lowerSqrtPriceX96) lowerSqrtPriceX96 = minSqrtRatio;
 
+                expect(currentSqrtPriceX96 + 1n).to.above(lowerSqrtPriceX96);
+                expect(lowerSqrtPriceX96 + 1n).to.above(minSqrtRatio);
+
                 const amount0 = getRandomInt(Number(convert(10000000n, 40n))) + 1n;
                 const amount1 = getRandomInt(Number(convert(10000000n, 40n))) + 1n;
 
@@ -124,13 +127,21 @@ describe("UniswapV3Utils", function () {
         });
 
         it("Providing liquidity [fuzzing]", async function () {
-            const { uniswapV3Deployer, usdc, wethUsdcPool, weth, positionManager, swapRouter02, user, uniswapV3UtilsMock } = await loadFixture(UniswapV3UtilsFixture);
+            const {
+                uniswapV3Deployer, usdc, wethUsdcPool, weth, positionManager, swapRouter02, user, userTwo, userThree, userFour, uniswapV3UtilsMock
+            } = await loadFixture(UniswapV3UtilsFixture);
 
             if (!config.fuzzing.enabled) {
                 return;
             }
 
             await weth.connect(user).deposit({ value: withDecimals("9000") });
+            await weth.connect(userTwo).deposit({ value: withDecimals("9900") });
+            await weth.connect(userThree).deposit({ value: withDecimals("9900") });
+            await weth.connect(userFour).deposit({ value: withDecimals("9900") });
+            await weth.connect(userTwo).transfer(user.address, await weth.balanceOf(userTwo.address));
+            await weth.connect(userThree).transfer(user.address, await weth.balanceOf(userThree.address));
+            await weth.connect(userFour).transfer(user.address, await weth.balanceOf(userFour.address));
 
             await positionManager.connect(uniswapV3Deployer).decreaseLiquidity([
                 3n,
@@ -177,8 +188,8 @@ describe("UniswapV3Utils", function () {
                 let lowerSqrtPriceX96 = getRandomInt(Number(currentSqrtPriceX96) - 1);
                 if (minSqrtRatio > lowerSqrtPriceX96) lowerSqrtPriceX96 = minSqrtRatio;
 
-                const wethAmount = getRandomInt(Number(convert(300n, 18n))) + 1n;
-                const usdcAmount = getRandomInt(Number(convert(1000000n, 6n))) + 1n;
+                const wethAmount = getRandomInt(Number(convert(300n, 18n))) + 1000000n;
+                const usdcAmount = getRandomInt(Number(convert(1000000n, 6n))) + 1000n;
 
                 const amount0 = weth.target < usdc.target ? wethAmount : usdcAmount;
                 const amount1 = weth.target < usdc.target ? usdcAmount : wethAmount;
@@ -228,6 +239,339 @@ describe("UniswapV3Utils", function () {
                     expect(wethBalanceBefore - await weth.balanceOf(user.address)).to.closeTo(wethAmount, wethAmount / 100n);
                     expect(usdcBalanceBefore - await usdc.balanceOf(user.address)).to.closeTo(usdcAmount, usdcAmount / 100n);
                 }
+            }
+        });
+    });
+
+    describe("getLowerSqrtPriceX96()", function () {
+        it("Success", async function () {
+            const { uniswapV3Deployer, usdc, wethUsdcPool, weth, positionManager, user, uniswapV3UtilsMock } = await loadFixture(UniswapV3UtilsFixture);
+
+            const currentSqrtPriceX96 = (await wethUsdcPool.slot0())[0];
+            const tickSpacing = await wethUsdcPool.tickSpacing();
+
+            let upperSqrtPriceX96 = 2195280434697541071699621943234603n;
+
+            if (currentSqrtPriceX96 >= upperSqrtPriceX96) {
+                upperSqrtPriceX96 = currentSqrtPriceX96 * 3n;
+            }
+
+            const wethAmount = convert(10n, 18n);
+            const usdcAmount = convert(12500n, 6n);
+
+            const amount0 = weth.target < usdc.target ? wethAmount : usdcAmount;
+            const amount1 = weth.target < usdc.target ? usdcAmount : wethAmount;
+
+            const lowerSqrtPriceX96 = await uniswapV3UtilsMock.getLowerSqrtPriceX96(
+                currentSqrtPriceX96,
+                upperSqrtPriceX96,
+                amount0,
+                amount1
+            );
+
+            await weth.connect(uniswapV3Deployer).transfer(user.address, wethAmount);
+            await usdc.connect(uniswapV3Deployer).mint(user.address, usdcAmount);
+
+            await weth.connect(user).approve(positionManager.target, wethAmount);
+            await usdc.connect(user).approve(positionManager.target, usdcAmount);
+
+            const wethBalanceBefore = await weth.balanceOf(user.address);
+            const usdcBalanceBefore = await usdc.balanceOf(user.address);
+            const nextTokenId = await positionManager.totalSupply() + 1n;
+
+            await expect(positionManager.connect(user).mint([
+                weth.target < usdc.target ? weth.target : usdc.target,
+                weth.target < usdc.target ? usdc.target : weth.target,
+                await wethUsdcPool.fee(),
+                await uniswapV3UtilsMock["getValidTick(uint160,int24)"](lowerSqrtPriceX96, tickSpacing),
+                await uniswapV3UtilsMock["getValidTick(uint160,int24)"](upperSqrtPriceX96, tickSpacing),
+                amount0,
+                amount1,
+                0n,
+                0n,
+                user.address,
+                4102444800n
+            ])).to.emit(positionManager, "IncreaseLiquidity").withArgs(
+                nextTokenId,
+                anyValue,
+                anyValue,
+                anyValue
+            ).to.emit(weth, "Transfer").withArgs(
+                user.address,
+                wethUsdcPool.target,
+                anyValue
+            ).to.emit(usdc, "Transfer").withArgs(
+                user.address,
+                wethUsdcPool.target,
+                anyValue
+            );
+
+            expect(wethBalanceBefore - await weth.balanceOf(user.address)).to.closeTo(wethAmount, wethAmount / 200n);
+            expect(usdcBalanceBefore - await usdc.balanceOf(user.address)).to.closeTo(usdcAmount, usdcAmount / 200n);
+        });
+
+        it("Pure [fuzzing]", async function () {
+            const { uniswapV3UtilsMock } = await loadFixture(UniswapV3UtilsFixture);
+
+            if (!config.fuzzing.enabled) {
+                return;
+            }
+
+            const maxTick = await uniswapV3UtilsMock.MAX_TICK();
+            const minSqrtRatio = await uniswapV3UtilsMock.MIN_SQRT_RATIO();
+            const maxSqrtRatio = await uniswapV3UtilsMock.MAX_SQRT_RATIO();
+
+            for (let i = 0; FUZZING_RUNS > i; i++) {
+                const currentTick = getRandomInt(2) == 0n ? getRandomInt(Number(maxTick)) : -getRandomInt(Number(maxTick));
+                const currentSqrtPriceX96 = await uniswapV3UtilsMock.getSqrtRatioAtTick(currentTick);
+
+                let upperSqrtPriceX96 = await uniswapV3UtilsMock.getSqrtRatioAtTick(getRandomInt(Number(maxTick - currentTick)) + currentTick);
+                if (upperSqrtPriceX96 > maxSqrtRatio) upperSqrtPriceX96 = maxSqrtRatio;
+
+                expect(upperSqrtPriceX96 + 1n).to.above(currentSqrtPriceX96);
+                expect(maxSqrtRatio + 1n).to.above(upperSqrtPriceX96);
+
+                const amount0 = getRandomInt(Number(convert(10000000n, 40n))) + 1n;
+                const amount1 = getRandomInt(Number(convert(10000000n, 40n))) + 1n;
+
+                const lowerSqrtPriceX96 = await uniswapV3UtilsMock.getLowerSqrtPriceX96(
+                    currentSqrtPriceX96,
+                    upperSqrtPriceX96,
+                    amount0,
+                    amount1
+                );
+
+                expect(currentSqrtPriceX96 + 1n).to.above(lowerSqrtPriceX96);
+                expect(lowerSqrtPriceX96 + 1n).to.above(minSqrtRatio);
+            }
+        });
+
+        it("Providing liquidity [fuzzing]", async function () {
+            const {
+                uniswapV3Deployer, usdc, wethUsdcPool, weth, positionManager, swapRouter02, user, uniswapV3UtilsMock, userTwo, userThree, userFour
+            } = await loadFixture(UniswapV3UtilsFixture);
+
+            if (!config.fuzzing.enabled) {
+                return;
+            }
+
+            await weth.connect(user).deposit({ value: withDecimals("9000") });
+            await weth.connect(userTwo).deposit({ value: withDecimals("9900") });
+            await weth.connect(userThree).deposit({ value: withDecimals("9900") });
+            await weth.connect(userFour).deposit({ value: withDecimals("9900") });
+            await weth.connect(userTwo).transfer(user.address, await weth.balanceOf(userTwo.address));
+            await weth.connect(userThree).transfer(user.address, await weth.balanceOf(userThree.address));
+            await weth.connect(userFour).transfer(user.address, await weth.balanceOf(userFour.address));
+
+            await positionManager.connect(uniswapV3Deployer).decreaseLiquidity([
+                3n,
+                1722050807568877n,
+                0n,
+                0n,
+                4102444800n
+            ])
+
+            await weth.connect(uniswapV3Deployer).transfer(user.address, await weth.balanceOf(uniswapV3Deployer.address));
+            await usdc.connect(uniswapV3Deployer).mint(user.address, ethers.MaxUint256 - await usdc.totalSupply());
+
+            await weth.connect(user).approve(positionManager.target, ethers.MaxUint256);
+            await usdc.connect(user).approve(positionManager.target, ethers.MaxUint256);
+
+            await weth.connect(user).approve(swapRouter02.target, ethers.MaxUint256);
+            await usdc.connect(user).approve(swapRouter02.target, ethers.MaxUint256);
+
+            const poolFee = await wethUsdcPool.fee();
+            const tickSpacing = await wethUsdcPool.tickSpacing();
+            const maxSqrtRatio = await uniswapV3UtilsMock.MAX_SQRT_RATIO();
+            const maxTick = await uniswapV3UtilsMock.MAX_TICK();
+
+            for (let i = 0; FUZZING_RUNS > i; i++) {
+                const swapIn = getRandomInt(2) == 0n ? true : false;
+                const amountToSwap = swapIn ?
+                    getRandomInt(Number(convert(30000n, 6n))) + convert(5000n, 6n) :
+                    getRandomInt(Number(withDecimals("10"))) + withDecimals("1");
+
+                if (swapIn ? await usdc.balanceOf(user.address) > amountToSwap : await weth.balanceOf(user.address) > amountToSwap) {
+                    await swapRouter02.connect(user).exactInputSingle([
+                        swapIn ? usdc.target : weth.target,
+                        swapIn ? weth.target : usdc.target,
+                        poolFee,
+                        user.address,
+                        amountToSwap,
+                        0n,
+                        0n
+                    ]);
+                }
+
+                const currentSqrtPriceX96 = (await wethUsdcPool.slot0())[0];
+                const currentTick = await uniswapV3UtilsMock.getTickAtSqrtRatio(currentSqrtPriceX96);
+
+                let upperSqrtPriceX96 = await uniswapV3UtilsMock.getSqrtRatioAtTick(getRandomInt(Number(maxTick - currentTick)) + currentTick);
+                if (upperSqrtPriceX96 > maxSqrtRatio) upperSqrtPriceX96 = maxSqrtRatio;
+
+                const wethAmount = getRandomInt(Number(convert(300n, 18n))) + 1000000n;
+                const usdcAmount = getRandomInt(Number(convert(1000000n, 6n))) + 1000n;
+
+                const amount0 = weth.target < usdc.target ? wethAmount : usdcAmount;
+                const amount1 = weth.target < usdc.target ? usdcAmount : wethAmount;
+
+                const lowerSqrtPriceX96 = await uniswapV3UtilsMock.getLowerSqrtPriceX96(
+                    currentSqrtPriceX96,
+                    upperSqrtPriceX96,
+                    amount0,
+                    amount1
+                );
+
+                const lowerTick = await uniswapV3UtilsMock["getValidTick(uint160,int24)"](lowerSqrtPriceX96, tickSpacing);
+                const upperTick = await uniswapV3UtilsMock["getValidTick(uint160,int24)"](upperSqrtPriceX96, tickSpacing);
+
+                const wethBalanceBefore = await weth.balanceOf(user.address);
+                const usdcBalanceBefore = await usdc.balanceOf(user.address);
+                const nextTokenId = await positionManager.totalSupply() + 1n;
+
+                await expect(positionManager.connect(user).mint([
+                    weth.target < usdc.target ? weth.target : usdc.target,
+                    weth.target < usdc.target ? usdc.target : weth.target,
+                    poolFee,
+                    lowerTick,
+                    upperTick,
+                    amount0,
+                    amount1,
+                    0n,
+                    0n,
+                    user.address,
+                    4102444800n
+                ])).to.emit(positionManager, "IncreaseLiquidity").withArgs(
+                    nextTokenId,
+                    anyValue,
+                    anyValue,
+                    anyValue
+                ).to.emit(weth, "Transfer").withArgs(
+                    user.address,
+                    wethUsdcPool.target,
+                    anyValue
+                ).to.emit(usdc, "Transfer").withArgs(
+                    user.address,
+                    wethUsdcPool.target,
+                    anyValue
+                );
+
+                if (upperTick - currentTick > 650n && currentTick - lowerTick > 650n && 887000n > upperTick && lowerTick > -887000n) {
+                    expect(wethBalanceBefore - await weth.balanceOf(user.address)).to.closeTo(wethAmount, wethAmount / 100n);
+                    expect(usdcBalanceBefore - await usdc.balanceOf(user.address)).to.closeTo(usdcAmount, usdcAmount / 100n);
+                }
+            }
+        });
+    });
+
+    describe("getValidTick()", function () {
+        it("Boundaries", async function () {
+            const { uniswapV3UtilsMock } = await loadFixture(UniswapV3UtilsFixture);
+
+            const minTick = await uniswapV3UtilsMock.MIN_TICK();
+            const maxTick = await uniswapV3UtilsMock.MAX_TICK();
+            const minSqrtRatio = await uniswapV3UtilsMock.MIN_SQRT_RATIO();
+            const maxSqrtRatio = await uniswapV3UtilsMock.MAX_SQRT_RATIO();
+            const tickSpacing = [1n, 10n, 60n, 200n];
+
+            expect(await uniswapV3UtilsMock["getValidTick(int24,int24)"](maxTick + 100000n, tickSpacing[0])).to.equal(maxTick);
+            expect(await uniswapV3UtilsMock["getValidTick(uint160,int24)"](maxSqrtRatio + 1000000000n, tickSpacing[0])).to.equal(maxTick - 1n);
+            expect(await uniswapV3UtilsMock["getValidTick(int24,int24)"](minTick - 100000n, tickSpacing[0])).to.equal(minTick);
+            expect(await uniswapV3UtilsMock["getValidTick(uint160,int24)"](minSqrtRatio - 1000000000n, tickSpacing[0])).to.equal(minTick);
+
+            expect(await uniswapV3UtilsMock["getValidTick(int24,int24)"](maxTick + 100000n, tickSpacing[1])).to.equal(maxTick - 2n);
+            expect(await uniswapV3UtilsMock["getValidTick(uint160,int24)"](maxSqrtRatio + 1000000000n, tickSpacing[1])).to.equal(maxTick - 2n);
+            expect(await uniswapV3UtilsMock["getValidTick(int24,int24)"](minTick - 100000n, tickSpacing[1])).to.equal(minTick + 2n);
+            expect(await uniswapV3UtilsMock["getValidTick(uint160,int24)"](minSqrtRatio - 1000000000n, tickSpacing[1])).to.equal(minTick + 2n);
+
+            expect(await uniswapV3UtilsMock["getValidTick(int24,int24)"](maxTick + 100000n, tickSpacing[2])).to.equal(maxTick - 52n);
+            expect(await uniswapV3UtilsMock["getValidTick(uint160,int24)"](maxSqrtRatio + 1000000000n, tickSpacing[2])).to.equal(maxTick - 52n);
+            expect(await uniswapV3UtilsMock["getValidTick(int24,int24)"](minTick - 100000n, tickSpacing[2])).to.equal(minTick + 52n);
+            expect(await uniswapV3UtilsMock["getValidTick(uint160,int24)"](minSqrtRatio - 1000000000n, tickSpacing[2])).to.equal(minTick + 52n);
+
+            expect(await uniswapV3UtilsMock["getValidTick(int24,int24)"](maxTick + 100000n, tickSpacing[3])).to.equal(maxTick - 72n);
+            expect(await uniswapV3UtilsMock["getValidTick(uint160,int24)"](maxSqrtRatio + 1000000000n, tickSpacing[3])).to.equal(maxTick - 72n);
+            expect(await uniswapV3UtilsMock["getValidTick(int24,int24)"](minTick - 100000n, tickSpacing[3])).to.equal(minTick + 72n);
+            expect(await uniswapV3UtilsMock["getValidTick(uint160,int24)"](minSqrtRatio - 1000000000n, tickSpacing[3])).to.equal(minTick + 72n);
+        });
+
+        it("Success [fuzzing]", async function () {
+            const { uniswapV3UtilsMock } = await loadFixture(UniswapV3UtilsFixture);
+
+            if (!config.fuzzing.enabled) {
+                return;
+            }
+
+            const minTick = await uniswapV3UtilsMock.MIN_TICK();
+            const maxTick = await uniswapV3UtilsMock.MAX_TICK();
+            const tickSpacing = [1n, 10n, 60n, 200n];
+
+            for (let i = 0; FUZZING_RUNS > i; i++) {
+                const currentTick = getRandomInt(2) == 0n ? getRandomInt(Number(maxTick)) : -getRandomInt(Number(maxTick));
+                const currentSqrtPriceX96 = await uniswapV3UtilsMock.getSqrtRatioAtTick(currentTick);
+
+                for (let j = 0; tickSpacing.length > j; j++) {
+                    const validTick = await uniswapV3UtilsMock["getValidTick(int24,int24)"](currentTick, tickSpacing[j]);
+                    const validTickBySqrtPriceX96 = await uniswapV3UtilsMock["getValidTick(uint160,int24)"](currentSqrtPriceX96, tickSpacing[j]);
+
+                    expect(validTick % tickSpacing[j]).to.equal(0n);
+                    expect(validTickBySqrtPriceX96 % tickSpacing[j]).to.equal(0n);
+
+                    expect(validTick + 1n).to.above(minTick);
+                    expect(maxTick).to.above(validTick);
+                    expect(validTickBySqrtPriceX96 + 1n).to.above(minTick);
+                    expect(maxTick).to.above(validTickBySqrtPriceX96);
+
+                    expect(currentTick + tickSpacing[j] + 1n).to.above(validTick);
+                    expect(validTick).to.above(currentTick - tickSpacing[j] - 1n);
+                    expect(currentTick + tickSpacing[j] + 1n).to.above(validTickBySqrtPriceX96);
+                    expect(validTickBySqrtPriceX96).to.above(currentTick - tickSpacing[j] - 1n);
+                }
+            }
+        });
+    });
+
+    describe("getSqrtPriceX96()", function () {
+        it("Zero", async function () {
+            const { uniswapV3UtilsMock } = await loadFixture(UniswapV3UtilsFixture);
+
+            expect(await uniswapV3UtilsMock.getSqrtPriceX96(convert(1n, 18n), 0n)).to.equal(0n);
+            expect(await uniswapV3UtilsMock.getSqrtPriceX96(0n, convert(1n, 18n))).to.equal(0n);
+            expect(await uniswapV3UtilsMock.getSqrtPriceX96(0n, 0n)).to.equal(0n);
+            expect(await uniswapV3UtilsMock.getSqrtPriceX96(1n, 1n)).to.above(0n);
+
+            expect(await uniswapV3UtilsMock.getSqrtPriceX96(1n, ethers.MaxUint256)).to.equal(await uniswapV3UtilsMock.MAX_SQRT_RATIO() - 1n);
+            expect(await uniswapV3UtilsMock.getSqrtPriceX96(ethers.MaxUint256, 1n)).to.equal(await uniswapV3UtilsMock.MIN_SQRT_RATIO());
+        });
+
+        it("Success [fuzzing]", async function () {
+            const { uniswapV3UtilsMock } = await loadFixture(UniswapV3UtilsFixture);
+
+            if (!config.fuzzing.enabled) {
+                return;
+            }
+
+            const minSqrtRatio = await uniswapV3UtilsMock.MIN_SQRT_RATIO();
+            const maxSqrtRatio = await uniswapV3UtilsMock.MAX_SQRT_RATIO();
+
+            function getSqrtPriceX96Pure(amount0, amount1) {
+                let result = BigInt(Math.round(Math.sqrt(Number(amount1) / Number(amount0)) * 2 ** 96));
+
+                if (result >= maxSqrtRatio) return maxSqrtRatio;
+                if (minSqrtRatio > result) return minSqrtRatio;
+
+                return result;
+            }
+
+            for (let i = 0; FUZZING_RUNS > i; i++) {
+                const amount0 = getRandomInt(2 ** 128) + 1n;
+                const amount1 = getRandomInt(2 ** 128) + 1n;
+
+                expect(
+                    await uniswapV3UtilsMock.getTickAtSqrtRatio(await uniswapV3UtilsMock.getSqrtPriceX96(amount0, amount1))
+                ).to.equal(
+                    await uniswapV3UtilsMock.getTickAtSqrtRatio(getSqrtPriceX96Pure(amount0, amount1))
+                );
             }
         });
     });

@@ -149,12 +149,12 @@ library UniswapV3Utils {
 
         (balance0, balance1) = (balance0.sqrt(), balance1.sqrt());
 
-        (bool _success, uint256 _sqrtPriceX96) = balance1.tryMulDiv(FixedPoint96.Q96, balance0);
+        uint256 _sqrtPriceX96 = balance1.mulDiv(FixedPoint96.Q96, balance0);
 
-        if (!_success || _sqrtPriceX96 >= TickMath.MAX_SQRT_RATIO) {
-            return TickMath.MAX_SQRT_RATIO - 1;
-        } else {
+        if (TickMath.MAX_SQRT_RATIO > _sqrtPriceX96) {
             return TickMath.MIN_SQRT_RATIO >= _sqrtPriceX96 ? TickMath.MIN_SQRT_RATIO : uint160(_sqrtPriceX96);
+        } else {
+            return TickMath.MAX_SQRT_RATIO - 1;
         }
     }
 
