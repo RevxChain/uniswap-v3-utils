@@ -73,7 +73,7 @@ module.exports = {
             {
                 version: "0.8.27",
                 settings: {
-                    viaIR: false,
+                    viaIR: true,
                     evmVersion: "cancun",
                     optimizer: {
                         enabled: true,
@@ -91,6 +91,12 @@ module.exports = {
             "lib/permit2/src/EIP712.sol": compilers.permit2,
             "lib/permit2/src/PermitErrors.sol": compilers.permit2,
         },
+    },
+
+    // custom fuzzing
+    fuzzing: {
+        enabled: true,
+        runs: 100
     },
 
     gasReporter: {

@@ -276,6 +276,8 @@ library UniswapV3Utils {
     function _getQuoteAtTick(address pool, int24 tick, address tokenIn, uint256 amountIn) private view returns(uint256 amountOut) {
         (address _token0, address _token1) = (IUniswapV3Pool(pool).token0(), IUniswapV3Pool(pool).token1());
 
+        if (tokenIn != _token0 && tokenIn != _token1) return 0;
+
         return tick.getQuoteAtTick(uint128(amountIn), tokenIn, tokenIn == _token0 ? _token1 : _token0);
     }
 
