@@ -1,5 +1,4 @@
-const { loadFixture } = require("@nomicfoundation/hardhat-network-helpers");
-const { zeroAddress } = require("./Utils");
+const { loadFixture, mine } = require("@nomicfoundation/hardhat-network-helpers");
 
 async function UniswapV3DeploymentFixture() {
     const [, , , , , , , , , , , , , , , , , , , uniswapV3Deployer] = await ethers.getSigners();
@@ -74,7 +73,7 @@ function createUniswapV3DeploymentFixtureCustomWETH(weth) {
             require('../build/@uniswap/swap-router-contracts/contracts/SwapRouter02.sol/SwapRouter02.json').bytecode,
             uniswapV3Deployer
         );
-        const swapRouter02 = await SwapRouter02.deploy(zeroAddress, uniswapFactory.target, positionManager.target, weth.target);
+        const swapRouter02 = await SwapRouter02.deploy(ethers.ZeroAddress, uniswapFactory.target, positionManager.target, weth.target);
         await swapRouter02.waitForDeployment();
 
         const QuoterV1 = new ethers.ContractFactory(
@@ -135,6 +134,8 @@ function createUniswapV3DeploymentFixtureCustomWETH(weth) {
 }
 
 async function UniswapV3MainnetForkSetup(chainId) {
+
+    await mine(1);
 
     const addresses = require('../uniswap.addresses.json')[chainId.toString()];
 

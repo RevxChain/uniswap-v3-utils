@@ -13,18 +13,18 @@ function convert(amount, decimals) {
     return amount * 10n ** decimals;
 };
 
-function getRandomValue(min, max) {
-    const minCeiled = Math.ceil(min ** 10);
-    const maxFloored = Math.floor(Math.floor(Math.random() * max) ** 10);
-    return BigInt(Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled));
-}
-
 function getRandomInt(max) {
     return BigInt(Math.floor(Math.random() * max));
 }
 
 function getRandomInt3(max) {
     return BigInt(Math.floor(Math.random() * max) + 3);
+}
+
+function getRandomValue(min, max) {
+    const minCeiled = Math.ceil(min ** 10);
+    const maxFloored = Math.floor(Math.floor(Math.random() * max) ** 10);
+    return BigInt(Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled));
 }
 
 function getSqrtPriceX96(token0, token1, token0Amount, token1Amount) {
