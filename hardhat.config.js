@@ -22,9 +22,9 @@ module.exports = {
             chainId: 1,
             accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
         },
-        bsc: {
-            url: process.env.BSC_RPC_URL !== undefined ? process.env.BSC_RPC_URL : "https://binance.llamarpc.com",
-            chainId: 56,
+        unichain: {
+            url: process.env.UNICHAIN_RPC_URL !== undefined ? process.env.UNICHAIN_RPC_URL : "https://unichain.drpc.org",
+            chainId: 130,
             accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
         },
         arbitrum: {
@@ -32,9 +32,9 @@ module.exports = {
             chainId: 42161,
             accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
         },
-        base: {
-            url: process.env.BASE_RPC_URL !== undefined ? process.env.BASE_RPC_URL : "https://base.llamarpc.com",
-            chainId: 8453,
+        optimism: {
+            url: process.env.OPTIMISM_RPC_URL !== undefined ? process.env.OPTIMISM_RPC_URL : "https://optimism.llamarpc.com",
+            chainId: 10,
             accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
         },
         polygon: {
@@ -42,14 +42,24 @@ module.exports = {
             chainId: 137,
             accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
         },
+        base: {
+            url: process.env.BASE_RPC_URL !== undefined ? process.env.BASE_RPC_URL : "https://base.llamarpc.com",
+            chainId: 8453,
+            accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+        },
+        bsc: {
+            url: process.env.BSC_RPC_URL !== undefined ? process.env.BSC_RPC_URL : "https://binance.llamarpc.com",
+            chainId: 56,
+            accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+        },
         avalanche: {
             url: process.env.AVALANCHE_RPC_URL !== undefined ? process.env.AVALANCHE_RPC_URL : "https://avalanche-c-chain-rpc.publicnode.com",
             chainId: 43114,
             accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
         },
-        optimism: {
-            url: process.env.OPTIMISM_RPC_URL !== undefined ? process.env.OPTIMISM_RPC_URL : "https://optimism.llamarpc.com",
-            chainId: 10,
+        celo: {
+            url: process.env.CELO_RPC_URL !== undefined ? process.env.CELO_RPC_URL : "https://celo.drpc.org",
+            chainId: 42220,
             accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
         },
         blast: {
@@ -57,11 +67,21 @@ module.exports = {
             chainId: 81457,
             accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
         },
-        celo: {
-            url: process.env.CELO_RPC_URL !== undefined ? process.env.CELO_RPC_URL : "https://celo.drpc.org",
-            chainId: 42220,
+        zora: {
+            url: process.env.ZORA_RPC_URL !== undefined ? process.env.ZORA_RPC_URL : "https://zora.drpc.org",
+            chainId: 7777777,
             accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
-        }
+        },
+        monad: {
+            url: process.env.MONAD_RPC_URL !== undefined ? process.env.MONAD_RPC_URL : "https://monad-mainnet.drpc.org",
+            chainId: 143,
+            accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+        },
+        megaeth: {
+            url: process.env.MEGAETH_RPC_URL !== undefined ? process.env.MEGAETH_RPC_URL : "https://megaeth.drpc.org",
+            chainId: 4326,
+            accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+        },
     },
 
     paths: {
