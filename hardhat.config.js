@@ -64,6 +64,10 @@ module.exports = {
         }
     },
 
+    paths: {
+        sources: "./src",
+    },
+
     mocha: {
         timeout: 200000,
     },
@@ -83,8 +87,8 @@ module.exports = {
             },
         ],
         overrides: {
-            "contracts/mocks/Multicall2.sol": compilers.multicall2,
-            "contracts/mocks/Permit2.sol": compilers.permit2,
+            "src/mocks/Multicall2.sol": compilers.multicall2,
+            "src/mocks/Permit2.sol": compilers.permit2,
             "lib/permit2/src/Permit2.sol": compilers.permit2,
             "lib/permit2/src/AllowanceTransfer.sol": compilers.permit2,
             "lib/permit2/src/SignatureTransfer.sol": compilers.permit2,

@@ -150,15 +150,15 @@ library UniswapV3Utils {
         if (TickMath.MIN_TICK > validTick) return TickMath.MIN_TICK - TickMath.MIN_TICK % tickSpacing;
     }
 
-    function getSqrtPriceX96(uint256 balance0, uint256 balance1) internal pure returns(uint160 sqrtPriceX96) {
-        if (balance0 == 0 || balance1 == 0) return 0;
+    function getSqrtPriceX96(uint256 amount0, uint256 amount1) internal pure returns(uint160 sqrtPriceX96) {
+        if (amount0 == 0 || amount1 == 0) return 0;
 
-        (balance0, balance1) = (balance0.sqrt(), balance1.sqrt());
+        (amount0, amount1) = (amount0.sqrt(), amount1.sqrt());
 
-        uint256 _sqrtPriceX96 = balance1.mulDiv(FixedPoint96.Q96, balance0);
+        uint256 _sqrtPriceX96 = amount1.mulDiv(FixedPoint96.Q96, amount0);
 
         if (TickMath.MAX_SQRT_RATIO > _sqrtPriceX96) {
-            return TickMath.MIN_SQRT_RATIO >= _sqrtPriceX96 ? TickMath.MIN_SQRT_RATIO : uint160(_sqrtPriceX96);
+            return TickMath.MIN_SQRT_RATIO > _sqrtPriceX96 ? TickMath.MIN_SQRT_RATIO : uint160(_sqrtPriceX96);
         } else {
             return TickMath.MAX_SQRT_RATIO - 1;
         }
