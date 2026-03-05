@@ -7,10 +7,10 @@ import {FixedPoint128} from "@uniswap/v3-core/contracts/libraries/FixedPoint128.
 import {FixedPoint96} from "@uniswap/v3-core/contracts/libraries/FixedPoint96.sol";
 import {TickMath} from "@uniswap/v3-core/contracts/libraries/TickMath.sol";
 
-import {LiquidityAmounts} from "../lib/uniswap-v3-periphery-0.8/contracts/libraries/LiquidityAmounts.sol";
-import {OracleLibrary} from "../lib/uniswap-v3-periphery-0.8/contracts/libraries/OracleLibrary.sol";
+import {LiquidityAmounts} from "./libraries/uniswap-v3-periphery-0.8/LiquidityAmounts.sol";
+import {OracleLibrary} from "./libraries/uniswap-v3-periphery-0.8/OracleLibrary.sol";
 
-import {FullMath} from "../lib/sir-trading-core/src/libraries/FullMath.sol";
+import {FullMath} from "./libraries/sir-trading-core/FullMath.sol";
 
 import {FixedPointMathLib} from "solmate/src/utils/FixedPointMathLib.sol";
 
