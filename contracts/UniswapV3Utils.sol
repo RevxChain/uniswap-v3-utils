@@ -7,13 +7,15 @@ import {FixedPoint128} from "@uniswap/v3-core/contracts/libraries/FixedPoint128.
 import {FixedPoint96} from "@uniswap/v3-core/contracts/libraries/FixedPoint96.sol";
 import {TickMath} from "@uniswap/v3-core/contracts/libraries/TickMath.sol";
 
-import {INonfungiblePositionManager} from "../lib/uniswap-v3-periphery-0.8/contracts/interfaces/INonfungiblePositionManager.sol";
 import {LiquidityAmounts} from "../lib/uniswap-v3-periphery-0.8/contracts/libraries/LiquidityAmounts.sol";
 import {OracleLibrary} from "../lib/uniswap-v3-periphery-0.8/contracts/libraries/OracleLibrary.sol";
 
 import {FullMath} from "../lib/sir-trading-core/src/libraries/FullMath.sol";
 
 import {FixedPointMathLib} from "solmate/src/utils/FixedPointMathLib.sol";
+
+import {INonfungiblePositionManagerTyped} from "./interfaces/INonfungiblePositionManagerTyped.sol";
+import {IUniswapV3PoolTyped} from "./interfaces/IUniswapV3PoolTyped.sol";
 
 library UniswapV3Utils {
     using FixedPointMathLib for uint256;
@@ -167,75 +169,40 @@ library UniswapV3Utils {
         address pool,
         uint256 tokenId
     ) internal view returns(uint256 amount0, uint256 amount1) {
-        (
-            /* uint96 _nonce */,
-            /* address _operator */,
-            /* address _token0 */,
-            /* address _token1 */,
-            /* uint24 _fee */,
-            int24 _tickLower,
-            int24 _tickUpper,
-            uint128 _liquidity,
-            uint256 _feeGrowthInside0LastX128,
-            uint256 _feeGrowthInside1LastX128,
-            /* uint128 _tokensOwed0 */,
-            /* uint128 _tokensOwed1 */
-        ) = INonfungiblePositionManager(positionManager).positions(tokenId);
-
-        (
-            /* uint160 _sqrtPriceX96 */,
-            int24 _tick,
-            /* uint16 _observationIndex */,
-            /* uint16 _observationCardinality */,
-            /* uint16 _observationCardinalityNext */,
-            /* uint8 _feeProtocol */,
-            /* bool _unlocked */
-        ) = IUniswapV3Pool(pool).slot0();
-
-        (
-            uint256 _feeGrowthGlobal0X128,
-            uint256 _feeGrowthGlobal1X128
-        ) = (IUniswapV3Pool(pool).feeGrowthGlobal0X128(), IUniswapV3Pool(pool).feeGrowthGlobal1X128());
-
-        (
-            /* uint128 _liquidityGross */,
-            /* int128 _liquidityNet */,
-            uint256 _feeGrowthOutside0X128Lower,
-            uint256 _feeGrowthOutside1X128Lower,
-            /* int56 _tickCumulativeOutside */,
-            /* uint160 _secondsPerLiquidityOutsideX128 */,
-            /* uint32 _secondsOutside */,
-            /* bool _initialized */
-        ) = IUniswapV3Pool(pool).ticks(_tickLower);
-
-        (
-            /* uint128 _liquidityGross */,
-            /* int128 _liquidityNet */,
-            uint256 _feeGrowthOutside0X128Upper,
-            uint256 _feeGrowthOutside1X128Upper,
-            /* int56 _tickCumulativeOutside */,
-            /* uint160 _secondsPerLiquidityOutsideX128 */,
-            /* uint32 _secondsOutside */,
-            /* bool _initialized */
-        ) = IUniswapV3Pool(pool).ticks(_tickUpper);
+        INonfungiblePositionManagerTyped _positionManager = INonfungiblePositionManagerTyped(positionManager);
 
         uint256 _feeGrowthInside0X128;
         uint256 _feeGrowthInside1X128;
 
-        if (_tick < _tickLower) {
-            _feeGrowthInside0X128 = _feeGrowthOutside0X128Lower - _feeGrowthOutside0X128Upper;
-            _feeGrowthInside1X128 = _feeGrowthOutside1X128Lower - _feeGrowthOutside1X128Upper;
-        } else if (_tick >= _tickUpper) {
-            _feeGrowthInside0X128 = _feeGrowthOutside0X128Upper - _feeGrowthOutside0X128Lower;
-            _feeGrowthInside1X128 = _feeGrowthOutside1X128Upper - _feeGrowthOutside1X128Lower;
-        } else {
-            _feeGrowthInside0X128 = _feeGrowthGlobal0X128 - _feeGrowthOutside0X128Lower - _feeGrowthOutside0X128Upper;
-            _feeGrowthInside1X128 = _feeGrowthGlobal1X128 - _feeGrowthOutside1X128Lower - _feeGrowthOutside1X128Upper;
+        {
+            int24 _tickLower = _positionManager.positions(tokenId).tickLower;
+            int24 _tickUpper = _positionManager.positions(tokenId).tickUpper;
+
+            int24 _tick = IUniswapV3PoolTyped(pool).slot0().tick;
+
+            uint256 _feeGrowthOutside0X128Lower = IUniswapV3PoolTyped(pool).ticks(_tickLower).feeGrowthOutside0X128;
+            uint256 _feeGrowthOutside1X128Lower = IUniswapV3PoolTyped(pool).ticks(_tickLower).feeGrowthOutside1X128;
+
+            uint256 _feeGrowthOutside0X128Upper = IUniswapV3PoolTyped(pool).ticks(_tickUpper).feeGrowthOutside0X128;
+            uint256 _feeGrowthOutside1X128Upper = IUniswapV3PoolTyped(pool).ticks(_tickUpper).feeGrowthOutside1X128;
+
+            if (_tick < _tickLower) {
+                _feeGrowthInside0X128 = _feeGrowthOutside0X128Lower - _feeGrowthOutside0X128Upper;
+                _feeGrowthInside1X128 = _feeGrowthOutside1X128Lower - _feeGrowthOutside1X128Upper;
+            } else if (_tick >= _tickUpper) {
+                _feeGrowthInside0X128 = _feeGrowthOutside0X128Upper - _feeGrowthOutside0X128Lower;
+                _feeGrowthInside1X128 = _feeGrowthOutside1X128Upper - _feeGrowthOutside1X128Lower;
+            } else {
+                _feeGrowthInside0X128 = IUniswapV3Pool(pool).feeGrowthGlobal0X128() - _feeGrowthOutside0X128Lower - _feeGrowthOutside0X128Upper;
+                _feeGrowthInside1X128 = IUniswapV3Pool(pool).feeGrowthGlobal1X128() - _feeGrowthOutside1X128Lower - _feeGrowthOutside1X128Upper;
+            }
         }
 
+        uint128 _liquidity = _positionManager.positions(tokenId).liquidity;
+
         return (
-            uint256(_feeGrowthInside0X128 - _feeGrowthInside0LastX128).mulDiv(_liquidity, FixedPoint128.Q128),
-            uint256(_feeGrowthInside1X128 - _feeGrowthInside1LastX128).mulDiv(_liquidity, FixedPoint128.Q128)
+            (_feeGrowthInside0X128 - _positionManager.positions(tokenId).feeGrowthInside0LastX128).mulDiv(_liquidity, FixedPoint128.Q128),
+            (_feeGrowthInside1X128 - _positionManager.positions(tokenId).feeGrowthInside1LastX128).mulDiv(_liquidity, FixedPoint128.Q128)
         );
     }
 
@@ -244,36 +211,11 @@ library UniswapV3Utils {
         address pool,
         uint256 tokenId
     ) internal view returns(uint256 amount0, uint256 amount1) {
-        (
-            /* uint96 _nonce */,
-            /* address _operator */,
-            /* address _token0 */,
-            /* address _token1 */,
-            /* uint24 _fee */,
-            int24 _tickLower,
-            int24 _tickUpper,
-            uint128 _liquidity,
-            /* uint256 _feeGrowthInside0LastX128 */,
-            /* uint256 _feeGrowthInside1LastX128 */,
-            /* uint128 _tokensOwed0 */,
-            /* uint128 _tokensOwed1 */
-        ) = INonfungiblePositionManager(positionManager).positions(tokenId);
-
-        (
-            /* uint160 _sqrtPriceX96 */,
-            int24 _tick,
-            /* uint16 _observationIndex */,
-            /* uint16 _observationCardinality */,
-            /* uint16 _observationCardinalityNext */,
-            /* uint8 _feeProtocol */,
-            /* bool _unlocked */
-        ) = IUniswapV3Pool(pool).slot0();
-
         return LiquidityAmounts.getAmountsForLiquidity(
-            _tick.getSqrtRatioAtTick(),
-            _tickLower.getSqrtRatioAtTick(),
-            _tickUpper.getSqrtRatioAtTick(),
-            _liquidity
+            IUniswapV3PoolTyped(pool).slot0().tick.getSqrtRatioAtTick(),
+            INonfungiblePositionManagerTyped(positionManager).positions(tokenId).tickLower.getSqrtRatioAtTick(),
+            INonfungiblePositionManagerTyped(positionManager).positions(tokenId).tickUpper.getSqrtRatioAtTick(),
+            INonfungiblePositionManagerTyped(positionManager).positions(tokenId).liquidity
         );
     }
 

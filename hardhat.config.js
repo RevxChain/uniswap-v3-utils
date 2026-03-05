@@ -73,7 +73,7 @@ module.exports = {
             {
                 version: "0.8.27",
                 settings: {
-                    viaIR: true,
+                    viaIR: false,
                     evmVersion: "cancun",
                     optimizer: {
                         enabled: true,
