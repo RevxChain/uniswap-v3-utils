@@ -1,12 +1,12 @@
-const { UniswapV3MainnetForkSetup, UniswapV3DeploymentFixture } = require("./UniswapV3DeploymentFixture");
-const { withDecimals, convert, createUniswapPool, uniswapV3PoolAbi } = require("./Utils");
+const { UniswapV3DeploymentFixture } = require("./UniswapV3DeploymentFixture");
 const { loadFixture } = require("@nomicfoundation/hardhat-network-helpers");
+const { withDecimals, convert, createUniswapPool } = require("./Utils");
 const { ethers } = require("hardhat");
 
 async function UniswapV3UtilsFixture() {
     const [user, userOne, userTwo, userThree, userFour] = await ethers.getSigners();
 
-    const { 
+    const {
         uniswapV3Deployer, weth, uniswapFactory, descriptorLibrary, tokenDescriptor, positionManager, swapRouter01, swapRouter02, quoter01, quoter02,
         tickLens, multicall, multicall2, permit2
     } = await loadFixture(UniswapV3DeploymentFixture);
@@ -14,7 +14,7 @@ async function UniswapV3UtilsFixture() {
     const stableDecimals = 6n;
     const tokenDecimals = 12n;
     const wethDecimals = await weth.decimals();
-    
+
     const ERC20Token = await ethers.getContractFactory("ERC20Token", uniswapV3Deployer);
     const usdc = await ERC20Token.deploy(stableDecimals);
     await usdc.waitForDeployment();
@@ -80,7 +80,7 @@ async function UniswapV3UtilsFixture() {
     await uniswapV3UtilsMock.waitForDeployment();
 
     return {
-        user, userOne, userTwo, userThree, userFour, uniswapV3Deployer, weth, uniswapFactory, descriptorLibrary, tokenDescriptor, positionManager, 
+        user, userOne, userTwo, userThree, userFour, uniswapV3Deployer, weth, uniswapFactory, descriptorLibrary, tokenDescriptor, positionManager,
         swapRouter01, swapRouter02, quoter01, quoter02, tickLens, multicall, multicall2, permit2, usdc, usdt, token, wethTokenPool, tokenUsdtPool,
         wethUsdcPool, usdtUsdcPool, uniswapV3UtilsMock
     };

@@ -119,13 +119,17 @@ library UniswapV3Utils {
     ) internal pure returns(uint160 lowerSqrtPriceX96) {
         uint256 _numerator = amount1 - amount1.mulDiv(uint256(currentSqrtPriceX96), uint256(upperSqrtPriceX96));
         uint256 _denominator = amount0.mulDiv(uint256(currentSqrtPriceX96), FixedPoint96.Q96);
-        uint256 _diffSqrtPriceX96 = _numerator.mulDiv(FixedPoint96.Q96, _denominator);
+        uint256 _diffSqrtPriceX96 = _numerator.mulDiv(FixedPoint96.Q96, _denominator == 0 ? 1 : _denominator);
 
         if (_diffSqrtPriceX96 >= currentSqrtPriceX96) return TickMath.MIN_SQRT_RATIO;
 
         lowerSqrtPriceX96 = uint160(currentSqrtPriceX96 - _diffSqrtPriceX96);
 
-        if (TickMath.MIN_SQRT_RATIO > lowerSqrtPriceX96) return TickMath.MIN_SQRT_RATIO;
+        if (lowerSqrtPriceX96 > TickMath.MIN_SQRT_RATIO) {
+            return lowerSqrtPriceX96 > currentSqrtPriceX96 ? currentSqrtPriceX96 : lowerSqrtPriceX96;
+        } else {
+            return TickMath.MIN_SQRT_RATIO;
+        }
     }
 
     function getValidTick(uint160 sqrtPriceX96, int24 tickSpacing) internal pure returns(int24 validTick) {
