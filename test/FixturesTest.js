@@ -51,7 +51,11 @@ describe("FixturesTest", function () {
         it("Custom WETH fixture", async function () {
             const [user] = await ethers.getSigners();
 
-            const WETH9 = new ethers.ContractFactory(require('../build/WETH9.json').abi, require('../build/WETH9.json').bytecode, user);
+            const WETH9 = new ethers.ContractFactory(
+                require('../build/gnosis/canonical-weth/WETH9.json').abi,
+                require('../build/gnosis/canonical-weth/WETH9.json').bytecode,
+                user
+            );
             const wethPreDeploy = await WETH9.deploy();
             await wethPreDeploy.waitForDeployment();
 

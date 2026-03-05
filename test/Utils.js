@@ -1,5 +1,5 @@
-const uniswapV3PoolBytecode = require('@uniswap/v3-core-0.7/artifacts/contracts/UniswapV3Pool.sol/UniswapV3Pool.json').bytecode;
-const uniswapV3PoolAbi = require('@uniswap/v3-core-0.7/artifacts/contracts/UniswapV3Pool.sol/UniswapV3Pool.json').abi;
+const uniswapV3PoolBytecode = require('../build/@uniswap/v3-core-0.7/contracts/UniswapV3Pool.sol/UniswapV3Pool.json').bytecode;
+const uniswapV3PoolAbi = require('../build/@uniswap/v3-core-0.7/contracts/UniswapV3Pool.sol/UniswapV3Pool.json').abi;
 
 const { anyValue } = require("@nomicfoundation/hardhat-chai-matchers/withArgs");
 const { time } = require("@nomicfoundation/hardhat-network-helpers");
