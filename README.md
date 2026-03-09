@@ -9,6 +9,8 @@ A Solidity library with various utility functions for UniswapV3 interactions —
 [![Uniswap V3](https://img.shields.io/badge/Uniswap-V3-ff007a?logo=uniswap)](https://docs.uniswap.org/contracts/v3/overview)
 [![Hardhat](https://img.shields.io/badge/Hardhat-Toolkit-yellow?logo=hardhat)](https://hardhat.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/RevxChain/uniswap-v3-utils/.github%2Fworkflows%2Ftests.yml)](https://github.com/RevxChain/uniswap-v3-utils/actions)
+[![NPM Version](https://img.shields.io/npm/v/%40revxchain%2Funiswap-v3-utils?color=green)](https://www.npmjs.com/package/@revxchain/uniswap-v3-utils)
 
 
 </div>
@@ -110,7 +112,7 @@ The primary Solidity library. Relies on the following math libraries:
 - `FixedPointMathLib` — `sqrt` from [solmate](https://github.com/transmissions11/solmate).
 - `TickMath`  — UniswapV3 tick math from [@uniswap/v3-core](https://github.com/Uniswap/v3-core).
 
-### [UniswapV3DeploymentFixture()](https://github.com/RevxChain/uniswap-v3-utils/blob/main/test/UniswapV3DeploymentFixture.js#L3)
+### [UniswapV3DeploymentFixture()](https://github.com/RevxChain/uniswap-v3-utils/blob/main/test/UniswapV3DeploymentFixture.js#L6)
 
 Hardhat fixture that deploys the complete UniswapV3 protocol from pre-compiled artifacts stored in `build/`:
 
@@ -130,13 +132,13 @@ Hardhat fixture that deploys the complete UniswapV3 protocol from pre-compiled a
 | [Multicall2](https://github.com/sky-ecosystem/multicall) | `build/sky-ecosystem/multicall/` |
 | [Permit2](https://github.com/Uniswap/permit2) | `build/@uniswap/permit2/` |
 
-### [createUniswapV3DeploymentFixtureCustomWETH()](https://github.com/RevxChain/uniswap-v3-utils/blob/main/test/UniswapV3DeploymentFixture.js#L19)
+### [createUniswapV3DeploymentFixtureCustomWETH()](https://github.com/RevxChain/uniswap-v3-utils/blob/main/test/UniswapV3DeploymentFixture.js#L22)
 
 Hardhat fixture creation function that deploys the complete UniswapV3 protocol from pre-compiled artifacts stored in `build/` with custom `WETH` contract.
 
-### [UniswapV3MainnetForkSetup()](https://github.com/RevxChain/uniswap-v3-utils/blob/main/test/UniswapV3DeploymentFixture.js#L136)
+### [UniswapV3MainnetForkSetup()](https://github.com/RevxChain/uniswap-v3-utils/blob/main/test/UniswapV3DeploymentFixture.js#L139)
 
-The function uses `uniswap.addresses.json` to attach to live deployments for mainnet fork testing.
+The function uses [uniswap.addresses.json](https://github.com/RevxChain/uniswap-v3-utils/blob/main/uniswap.addresses.json) to attach to live deployments for mainnet fork testing.
 
 #### [Supported networks](https://docs.uniswap.org/contracts/v3/reference/deployments/)
 
@@ -166,20 +168,26 @@ The function uses `uniswap.addresses.json` to attach to live deployments for mai
 
 ## Installation
 
-### Step 1: Clone the repository
+### Repository
+
+#### Step 1: Clone the repository
 
 ```bash
 git clone https://github.com/RevxChain/uniswap-v3-utils.git
 cd uniswap-v3-utils
 ```
 
-### Step 2: Install dependencies
+#### Step 2: Install dependencies
 
 ```bash
 npm install
 ```
 
-### Step 3: Create environment file (optional)
+```bash
+git submodule update --init --recursive
+```
+
+#### Step 3: Create environment file (optional)
 
 ```bash
 cp .env.example .env
@@ -200,7 +208,7 @@ ETH_RPC_URL = https://eth.llamarpc.com
 
 ```
 
-### Step 4: Compile contracts
+#### Step 4: Compile contracts
 
 ```bash
 npx hardhat compile
@@ -208,19 +216,19 @@ npx hardhat compile
 
 Compiles all Solidity contracts and generates artifacts.
 
-### Step 5: Run tests
+#### Step 5: Run tests
 
 ```bash
 npx hardhat test
 ```
 
-### Step 6: Run coverage
+#### Step 6: Run coverage
 
 ```bash
 npx hardhat coverage
 ```
 
-### Step 7: Run tests with custom fuzzing runs
+#### Step 7: Run tests with custom fuzzing runs
 
 Set fuzzing runs value in the `hardhat.config.js`:
 
@@ -235,6 +243,12 @@ Run tests:
 
 ```bash
 npx hardhat test
+```
+
+### Package
+
+```bash
+npm install @revxchain/uniswap-v3-utils
 ```
 
 ---
@@ -361,11 +375,11 @@ contract MyContract {
 
 ### Hardhat test environment:
 
-#### [UniswapV3DeploymentFixture()](https://github.com/RevxChain/uniswap-v3-utils/blob/main/test/UniswapV3DeploymentFixture.js#L3)
+#### [UniswapV3DeploymentFixture()](https://github.com/RevxChain/uniswap-v3-utils/blob/main/test/UniswapV3DeploymentFixture.js#L6)
 
 ```js
 const { loadFixture } = require("@nomicfoundation/hardhat-network-helpers");
-const { UniswapV3DeploymentFixture } = require("@revxchain/uniswap-v3-utils/test/UniswapV3UtilsFixture.js");
+const { UniswapV3DeploymentFixture } = require("@revxchain/uniswap-v3-utils/test/UniswapV3DeploymentFixture.js");
 
 const {
     uniswapV3Deployer, weth, uniswapFactory, descriptorLibrary, tokenDescriptor, positionManager, 
@@ -374,13 +388,13 @@ const {
 } = await loadFixture(UniswapV3DeploymentFixture);
 ```
 
-#### [createUniswapV3DeploymentFixtureCustomWETH()](https://github.com/RevxChain/uniswap-v3-utils/blob/main/test/UniswapV3DeploymentFixture.js#L19)
+#### [createUniswapV3DeploymentFixtureCustomWETH()](https://github.com/RevxChain/uniswap-v3-utils/blob/main/test/UniswapV3DeploymentFixture.js#L22)
 
 ```js
 const { loadFixture } = require("@nomicfoundation/hardhat-network-helpers");
-const { createUniswapV3DeploymentFixtureCustomWETH } = require("@revxchain/uniswap-v3-utils/test/UniswapV3UtilsFixture.js");
+const { createUniswapV3DeploymentFixtureCustomWETH } = require("@revxchain/uniswap-v3-utils/test/UniswapV3DeploymentFixture.js");
 
-// your custom WETH contract
+// your custom WETH contract (as a contract entity, not just address)
 const weth = ; 
 
 // call function with custom WETH contract
@@ -394,10 +408,10 @@ const {
 } = await loadFixture(UniswapV3DeploymentFixtureCustomWETH);
 ```
 
-#### [UniswapV3MainnetForkSetup()](https://github.com/RevxChain/uniswap-v3-utils/blob/main/test/UniswapV3DeploymentFixture.js#L136)
+#### [UniswapV3MainnetForkSetup()](https://github.com/RevxChain/uniswap-v3-utils/blob/main/test/UniswapV3DeploymentFixture.js#L139)
 
 ```js
-const { UniswapV3MainnetForkSetup } = require("@revxchain/uniswap-v3-utils/test/UniswapV3UtilsFixture.js");
+const { UniswapV3MainnetForkSetup } = require("@revxchain/uniswap-v3-utils/test/UniswapV3DeploymentFixture.js");
 
 const targetChainId = 1;
 

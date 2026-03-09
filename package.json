@@ -1,6 +1,18 @@
 {
-    "name": "uniswap-v3-utils",
-    "description": "Solidity library with various functions for interacting with Uniswap V3",
+    "name": "@revxchain/uniswap-v3-utils",
+    "description": "Solidity library with various utility functions for UniswapV3 interactions",
+    "version": "1.0.0",
+    "files": [
+        "build/",
+        "src/**/*",
+        "!src/mocks/*",
+        "test/UniswapV3DeploymentFixture.js",
+        "uniswap.addresses.json"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/RevxChain/uniswap-v3-utils.git"
+    },
     "keywords": [
         "ethereum",
         "solidity",
@@ -10,7 +22,14 @@
         "uniswap",
         "v3"
     ],
+    "author": {
+        "name": "Evgeny RevxChain",
+        "url": "https://github.com/RevxChain"
+    },
     "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/RevxChain/uniswap-v3-utils/issues"
+    },
     "devDependencies": {
         "@nomicfoundation/hardhat-toolbox": "^6.1.0",
         "@openzeppelin/contracts": "^5.0.0",
