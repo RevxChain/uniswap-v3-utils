@@ -8,6 +8,8 @@ const AbiCoder = new ethers.AbiCoder();
 const withDecimals = ethers.parseEther;
 const zeroAddress = ethers.ZeroAddress;
 const zeroHash = ethers.ZeroHash;
+const deadline = 4102444800n;
+const maxUint256 = ethers.MaxUint256;
 
 function convert(amount, decimals) {
     return amount * 10n ** decimals;
@@ -100,7 +102,7 @@ async function createUniswapPool(
         0,
         0,
         operator.address,
-        4102444800n
+        deadline
     ]);
 
     return deployedPool;
@@ -108,5 +110,5 @@ async function createUniswapPool(
 
 module.exports = {
     getSqrtPriceX96, convert, getRandomValue, getRandomInt, getRandomInt3, createUniswapPool, anyValue, time, AbiCoder, withDecimals, zeroAddress, zeroHash,
-    uniswapV3PoolBytecode, uniswapV3PoolAbi
+    deadline, maxUint256, uniswapV3PoolBytecode, uniswapV3PoolAbi
 };

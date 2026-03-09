@@ -1,4 +1,4 @@
-const { withDecimals, zeroAddress, convert, getRandomValue, getRandomInt, getRandomInt3, time, anyValue } = require("./Utils");
+const { withDecimals, maxUint256, zeroAddress, deadline, convert, getRandomValue, getRandomInt, getRandomInt3, time, anyValue } = require("./Utils");
 const { loadFixture } = require("@nomicfoundation/hardhat-network-helpers");
 const { UniswapV3UtilsFixture } = require("./UniswapV3UtilsFixture.js");
 const config = require('../hardhat.config.js');
@@ -70,7 +70,7 @@ describe("UniswapV3Utils", function () {
                 0n,
                 0n,
                 user.address,
-                4102444800n
+                deadline
             ])).to.emit(positionManager, "IncreaseLiquidity").withArgs(
                 nextTokenId,
                 anyValue,
@@ -160,17 +160,17 @@ describe("UniswapV3Utils", function () {
                 1722050807568877n,
                 0n,
                 0n,
-                4102444800n
+                deadline
             ]);
 
             await weth.connect(uniswapV3Deployer).transfer(user.address, await weth.balanceOf(uniswapV3Deployer.address));
-            await usdc.connect(uniswapV3Deployer).mint(user.address, ethers.MaxUint256 - await usdc.totalSupply());
+            await usdc.connect(uniswapV3Deployer).mint(user.address, maxUint256 - await usdc.totalSupply());
 
-            await weth.connect(user).approve(positionManager.target, ethers.MaxUint256);
-            await usdc.connect(user).approve(positionManager.target, ethers.MaxUint256);
+            await weth.connect(user).approve(positionManager.target, maxUint256);
+            await usdc.connect(user).approve(positionManager.target, maxUint256);
 
-            await weth.connect(user).approve(swapRouter02.target, ethers.MaxUint256);
-            await usdc.connect(user).approve(swapRouter02.target, ethers.MaxUint256);
+            await weth.connect(user).approve(swapRouter02.target, maxUint256);
+            await usdc.connect(user).approve(swapRouter02.target, maxUint256);
 
             const poolFee = await wethUsdcPool.fee();
             const tickSpacing = await wethUsdcPool.tickSpacing();
@@ -231,7 +231,7 @@ describe("UniswapV3Utils", function () {
                     0n,
                     0n,
                     user.address,
-                    4102444800n
+                    deadline
                 ])).to.emit(positionManager, "IncreaseLiquidity").withArgs(
                     nextTokenId,
                     anyValue,
@@ -288,17 +288,17 @@ describe("UniswapV3Utils", function () {
                 1722050807568877n,
                 0n,
                 0n,
-                4102444800n
+                deadline
             ]);
 
             await weth.connect(uniswapV3Deployer).transfer(user.address, await weth.balanceOf(uniswapV3Deployer.address));
-            await usdc.connect(uniswapV3Deployer).mint(user.address, ethers.MaxUint256 - await usdc.totalSupply());
+            await usdc.connect(uniswapV3Deployer).mint(user.address, maxUint256 - await usdc.totalSupply());
 
-            await weth.connect(user).approve(positionManager.target, ethers.MaxUint256);
-            await usdc.connect(user).approve(positionManager.target, ethers.MaxUint256);
+            await weth.connect(user).approve(positionManager.target, maxUint256);
+            await usdc.connect(user).approve(positionManager.target, maxUint256);
 
-            await weth.connect(user).approve(swapRouter02.target, ethers.MaxUint256);
-            await usdc.connect(user).approve(swapRouter02.target, ethers.MaxUint256);
+            await weth.connect(user).approve(swapRouter02.target, maxUint256);
+            await usdc.connect(user).approve(swapRouter02.target, maxUint256);
 
             const poolFee = await wethUsdcPool.fee();
             const tickSpacing = await wethUsdcPool.tickSpacing();
@@ -359,7 +359,7 @@ describe("UniswapV3Utils", function () {
                     0n,
                     0n,
                     user.address,
-                    4102444800n
+                    deadline
                 ])).to.emit(positionManager, "IncreaseLiquidity").withArgs(
                     nextTokenId,
                     anyValue,
@@ -446,7 +446,7 @@ describe("UniswapV3Utils", function () {
                 0n,
                 0n,
                 user.address,
-                4102444800n
+                deadline
             ])).to.emit(positionManager, "IncreaseLiquidity").withArgs(
                 nextTokenId,
                 anyValue,
@@ -550,17 +550,17 @@ describe("UniswapV3Utils", function () {
                 1722050807568877n,
                 0n,
                 0n,
-                4102444800n
+                deadline
             ])
 
             await weth.connect(uniswapV3Deployer).transfer(user.address, await weth.balanceOf(uniswapV3Deployer.address));
-            await usdc.connect(uniswapV3Deployer).mint(user.address, ethers.MaxUint256 - await usdc.totalSupply());
+            await usdc.connect(uniswapV3Deployer).mint(user.address, maxUint256 - await usdc.totalSupply());
 
-            await weth.connect(user).approve(positionManager.target, ethers.MaxUint256);
-            await usdc.connect(user).approve(positionManager.target, ethers.MaxUint256);
+            await weth.connect(user).approve(positionManager.target, maxUint256);
+            await usdc.connect(user).approve(positionManager.target, maxUint256);
 
-            await weth.connect(user).approve(swapRouter02.target, ethers.MaxUint256);
-            await usdc.connect(user).approve(swapRouter02.target, ethers.MaxUint256);
+            await weth.connect(user).approve(swapRouter02.target, maxUint256);
+            await usdc.connect(user).approve(swapRouter02.target, maxUint256);
 
             const poolFee = await wethUsdcPool.fee();
             const tickSpacing = await wethUsdcPool.tickSpacing();
@@ -622,7 +622,7 @@ describe("UniswapV3Utils", function () {
                     0n,
                     0n,
                     user.address,
-                    4102444800n
+                    deadline
                 ])).to.emit(positionManager, "IncreaseLiquidity").withArgs(
                     nextTokenId,
                     anyValue,
@@ -679,17 +679,17 @@ describe("UniswapV3Utils", function () {
                 1722050807568877n,
                 0n,
                 0n,
-                4102444800n
+                deadline
             ])
 
             await weth.connect(uniswapV3Deployer).transfer(user.address, await weth.balanceOf(uniswapV3Deployer.address));
-            await usdc.connect(uniswapV3Deployer).mint(user.address, ethers.MaxUint256 - await usdc.totalSupply());
+            await usdc.connect(uniswapV3Deployer).mint(user.address, maxUint256 - await usdc.totalSupply());
 
-            await weth.connect(user).approve(positionManager.target, ethers.MaxUint256);
-            await usdc.connect(user).approve(positionManager.target, ethers.MaxUint256);
+            await weth.connect(user).approve(positionManager.target, maxUint256);
+            await usdc.connect(user).approve(positionManager.target, maxUint256);
 
-            await weth.connect(user).approve(swapRouter02.target, ethers.MaxUint256);
-            await usdc.connect(user).approve(swapRouter02.target, ethers.MaxUint256);
+            await weth.connect(user).approve(swapRouter02.target, maxUint256);
+            await usdc.connect(user).approve(swapRouter02.target, maxUint256);
 
             const poolFee = await wethUsdcPool.fee();
             const tickSpacing = await wethUsdcPool.tickSpacing();
@@ -751,7 +751,7 @@ describe("UniswapV3Utils", function () {
                     0n,
                     0n,
                     user.address,
-                    4102444800n
+                    deadline
                 ])).to.emit(positionManager, "IncreaseLiquidity").withArgs(
                     nextTokenId,
                     anyValue,
@@ -787,11 +787,11 @@ describe("UniswapV3Utils", function () {
         it("Success out of lower range", async function () {
             const { uniswapV3Deployer, usdc, wethUsdcPool, weth, positionManager, user, uniswapV3UtilsMock, swapRouter02 } = await loadFixture(UniswapV3UtilsFixture);
 
-            await weth.connect(user).approve(positionManager.target, ethers.MaxUint256);
-            await usdc.connect(user).approve(positionManager.target, ethers.MaxUint256);
+            await weth.connect(user).approve(positionManager.target, maxUint256);
+            await usdc.connect(user).approve(positionManager.target, maxUint256);
 
-            await weth.connect(user).approve(swapRouter02.target, ethers.MaxUint256);
-            await usdc.connect(user).approve(swapRouter02.target, ethers.MaxUint256);
+            await weth.connect(user).approve(swapRouter02.target, maxUint256);
+            await usdc.connect(user).approve(swapRouter02.target, maxUint256);
 
             const wethAmount = convert(2n, 18n);
             const usdcAmount = convert(1000n, 6n);
@@ -858,7 +858,7 @@ describe("UniswapV3Utils", function () {
                 0n,
                 0n,
                 user.address,
-                4102444800n
+                deadline
             ])).to.emit(positionManager, "IncreaseLiquidity").withArgs(
                 anyValue,
                 anyValue,
@@ -877,11 +877,11 @@ describe("UniswapV3Utils", function () {
         it("Success out of upper range", async function () {
             const { uniswapV3Deployer, usdc, wethUsdcPool, weth, positionManager, user, uniswapV3UtilsMock, swapRouter02 } = await loadFixture(UniswapV3UtilsFixture);
 
-            await weth.connect(user).approve(positionManager.target, ethers.MaxUint256);
-            await usdc.connect(user).approve(positionManager.target, ethers.MaxUint256);
+            await weth.connect(user).approve(positionManager.target, maxUint256);
+            await usdc.connect(user).approve(positionManager.target, maxUint256);
 
-            await weth.connect(user).approve(swapRouter02.target, ethers.MaxUint256);
-            await usdc.connect(user).approve(swapRouter02.target, ethers.MaxUint256);
+            await weth.connect(user).approve(swapRouter02.target, maxUint256);
+            await usdc.connect(user).approve(swapRouter02.target, maxUint256);
 
             const wethAmount = convert(2n, 18n);
             const usdcAmount = convert(1000n, 6n);
@@ -948,7 +948,7 @@ describe("UniswapV3Utils", function () {
                 0n,
                 0n,
                 user.address,
-                4102444800n
+                deadline
             ])).to.emit(positionManager, "IncreaseLiquidity").withArgs(
                 anyValue,
                 anyValue,
@@ -973,8 +973,8 @@ describe("UniswapV3Utils", function () {
 
             const pools = [wethTokenPool, tokenUsdtPool, wethUsdcPool, usdtUsdcPool];
 
-            await token.connect(uniswapV3Deployer).approve(swapRouter02.target, ethers.MaxUint256);
-            await token.connect(uniswapV3Deployer).mint(uniswapV3Deployer, ethers.MaxUint256 - await token.totalSupply());
+            await token.connect(uniswapV3Deployer).approve(swapRouter02.target, maxUint256);
+            await token.connect(uniswapV3Deployer).mint(uniswapV3Deployer, maxUint256 - await token.totalSupply());
 
             await swapRouter02.connect(uniswapV3Deployer).exactInputSingle([
                 token.target,
@@ -1050,13 +1050,13 @@ describe("UniswapV3Utils", function () {
             await weth.connect(userFour).transfer(user.address, await weth.balanceOf(userFour.address));
 
             await weth.connect(uniswapV3Deployer).transfer(user.address, await weth.balanceOf(uniswapV3Deployer.address));
-            await usdc.connect(uniswapV3Deployer).mint(user.address, ethers.MaxUint256 - await usdc.totalSupply());
+            await usdc.connect(uniswapV3Deployer).mint(user.address, maxUint256 - await usdc.totalSupply());
 
-            await weth.connect(user).approve(positionManager.target, ethers.MaxUint256);
-            await usdc.connect(user).approve(positionManager.target, ethers.MaxUint256);
+            await weth.connect(user).approve(positionManager.target, maxUint256);
+            await usdc.connect(user).approve(positionManager.target, maxUint256);
 
-            await weth.connect(user).approve(swapRouter02.target, ethers.MaxUint256);
-            await usdc.connect(user).approve(swapRouter02.target, ethers.MaxUint256);
+            await weth.connect(user).approve(swapRouter02.target, maxUint256);
+            await usdc.connect(user).approve(swapRouter02.target, maxUint256);
 
             const token0 = weth.target < usdc.target ? weth.target : usdc.target;
             const token1 = weth.target < usdc.target ? usdc.target : weth.target;
@@ -1076,7 +1076,7 @@ describe("UniswapV3Utils", function () {
                 0n,
                 0n,
                 user.address,
-                4102444800n
+                deadline
             ]);
 
             for (let i = 0; FUZZING_RUNS > i; i++) {
@@ -1149,7 +1149,7 @@ describe("UniswapV3Utils", function () {
                     0n,
                     0n,
                     user.address,
-                    4102444800n
+                    deadline
                 ])).to.emit(positionManager, "IncreaseLiquidity").withArgs(
                     nextTokenId,
                     anyValue,
@@ -1260,8 +1260,8 @@ describe("UniswapV3Utils", function () {
             expect(await uniswapV3UtilsMock.getSqrtPriceX96(0n, 0n)).to.equal(0n);
             expect(await uniswapV3UtilsMock.getSqrtPriceX96(1n, 1n)).to.above(0n);
 
-            expect(await uniswapV3UtilsMock.getSqrtPriceX96(1n, ethers.MaxUint256)).to.equal(await uniswapV3UtilsMock.MAX_SQRT_RATIO() - 1n);
-            expect(await uniswapV3UtilsMock.getSqrtPriceX96(ethers.MaxUint256, 1n)).to.equal(await uniswapV3UtilsMock.MIN_SQRT_RATIO());
+            expect(await uniswapV3UtilsMock.getSqrtPriceX96(1n, maxUint256)).to.equal(await uniswapV3UtilsMock.MAX_SQRT_RATIO() - 1n);
+            expect(await uniswapV3UtilsMock.getSqrtPriceX96(maxUint256, 1n)).to.equal(await uniswapV3UtilsMock.MIN_SQRT_RATIO());
         });
 
         it("Success [fuzzing]", async function () {
@@ -1310,10 +1310,10 @@ describe("UniswapV3Utils", function () {
 
             const pools = [wethTokenPool, tokenUsdtPool, wethUsdcPool, usdtUsdcPool];
 
-            await weth.connect(uniswapV3Deployer).approve(swapRouter02.target, ethers.MaxUint256);
-            await usdc.connect(uniswapV3Deployer).approve(swapRouter02.target, ethers.MaxUint256);
-            await token.connect(uniswapV3Deployer).approve(swapRouter02.target, ethers.MaxUint256);
-            await usdt.connect(uniswapV3Deployer).approve(swapRouter02.target, ethers.MaxUint256);
+            await weth.connect(uniswapV3Deployer).approve(swapRouter02.target, maxUint256);
+            await usdc.connect(uniswapV3Deployer).approve(swapRouter02.target, maxUint256);
+            await token.connect(uniswapV3Deployer).approve(swapRouter02.target, maxUint256);
+            await usdt.connect(uniswapV3Deployer).approve(swapRouter02.target, maxUint256);
 
             for (let i = 0; pools.length > i; i++) {
                 const pool = pools[i];
@@ -1366,7 +1366,7 @@ describe("UniswapV3Utils", function () {
                 15591457268119895n,
                 0n,
                 0n,
-                4102444800n
+                deadline
             ]);
 
             await weth.connect(user).deposit({ value: convert(9000n, 18n) });
@@ -1378,15 +1378,15 @@ describe("UniswapV3Utils", function () {
             await weth.connect(userThree).transfer(uniswapV3Deployer.address, await weth.balanceOf(userThree));
             await weth.connect(userFour).transfer(uniswapV3Deployer.address, await weth.balanceOf(userFour.address));
 
-            await weth.connect(uniswapV3Deployer).approve(swapRouter02.target, ethers.MaxUint256);
-            await usdc.connect(uniswapV3Deployer).approve(swapRouter02.target, ethers.MaxUint256);
-            await token.connect(uniswapV3Deployer).approve(swapRouter02.target, ethers.MaxUint256);
-            await usdt.connect(uniswapV3Deployer).approve(swapRouter02.target, ethers.MaxUint256);
+            await weth.connect(uniswapV3Deployer).approve(swapRouter02.target, maxUint256);
+            await usdc.connect(uniswapV3Deployer).approve(swapRouter02.target, maxUint256);
+            await token.connect(uniswapV3Deployer).approve(swapRouter02.target, maxUint256);
+            await usdt.connect(uniswapV3Deployer).approve(swapRouter02.target, maxUint256);
 
-            await weth.connect(uniswapV3Deployer).approve(positionManager.target, ethers.MaxUint256);
-            await usdc.connect(uniswapV3Deployer).approve(positionManager.target, ethers.MaxUint256);
-            await token.connect(uniswapV3Deployer).approve(positionManager.target, ethers.MaxUint256);
-            await usdt.connect(uniswapV3Deployer).approve(positionManager.target, ethers.MaxUint256);
+            await weth.connect(uniswapV3Deployer).approve(positionManager.target, maxUint256);
+            await usdc.connect(uniswapV3Deployer).approve(positionManager.target, maxUint256);
+            await token.connect(uniswapV3Deployer).approve(positionManager.target, maxUint256);
+            await usdt.connect(uniswapV3Deployer).approve(positionManager.target, maxUint256);
 
             const tickSpacing = await wethUsdcPool.tickSpacing();
 
@@ -1415,7 +1415,7 @@ describe("UniswapV3Utils", function () {
                 0n,
                 0n,
                 uniswapV3Deployer.address,
-                4102444800n
+                deadline
             ]);
 
             let positionLiquidity = await uniswapV3UtilsMock.getPositionLiquidity(positionManager.target, wethUsdcPool.target, 5n);
@@ -1472,7 +1472,7 @@ describe("UniswapV3Utils", function () {
                 (await positionManager.positions(1n))[7] - 100000n,
                 0n,
                 0n,
-                4102444800n
+                deadline
             ]);
 
             await weth.connect(user).deposit({ value: convert(9000n, 18n) });
@@ -1484,15 +1484,15 @@ describe("UniswapV3Utils", function () {
             await weth.connect(userThree).transfer(uniswapV3Deployer.address, await weth.balanceOf(userThree));
             await weth.connect(userFour).transfer(uniswapV3Deployer.address, await weth.balanceOf(userFour.address));
 
-            await weth.connect(uniswapV3Deployer).approve(swapRouter02.target, ethers.MaxUint256);
-            await usdc.connect(uniswapV3Deployer).approve(swapRouter02.target, ethers.MaxUint256);
-            await token.connect(uniswapV3Deployer).approve(swapRouter02.target, ethers.MaxUint256);
-            await usdt.connect(uniswapV3Deployer).approve(swapRouter02.target, ethers.MaxUint256);
+            await weth.connect(uniswapV3Deployer).approve(swapRouter02.target, maxUint256);
+            await usdc.connect(uniswapV3Deployer).approve(swapRouter02.target, maxUint256);
+            await token.connect(uniswapV3Deployer).approve(swapRouter02.target, maxUint256);
+            await usdt.connect(uniswapV3Deployer).approve(swapRouter02.target, maxUint256);
 
-            await weth.connect(uniswapV3Deployer).approve(positionManager.target, ethers.MaxUint256);
-            await usdc.connect(uniswapV3Deployer).approve(positionManager.target, ethers.MaxUint256);
-            await token.connect(uniswapV3Deployer).approve(positionManager.target, ethers.MaxUint256);
-            await usdt.connect(uniswapV3Deployer).approve(positionManager.target, ethers.MaxUint256);
+            await weth.connect(uniswapV3Deployer).approve(positionManager.target, maxUint256);
+            await usdc.connect(uniswapV3Deployer).approve(positionManager.target, maxUint256);
+            await token.connect(uniswapV3Deployer).approve(positionManager.target, maxUint256);
+            await usdt.connect(uniswapV3Deployer).approve(positionManager.target, maxUint256);
 
             const tickSpacing = await wethTokenPool.tickSpacing();
 
@@ -1518,7 +1518,7 @@ describe("UniswapV3Utils", function () {
                 0n,
                 0n,
                 uniswapV3Deployer.address,
-                4102444800n
+                deadline
             ]);
 
             while ((await wethTokenPool.slot0())[1] - 1000n < 336200n) {
@@ -1790,7 +1790,7 @@ describe("UniswapV3Utils", function () {
                 0,
                 0,
                 uniswapV3Deployer.address,
-                4102444800n
+                deadline
             ]);
 
             await time.increase(40);
@@ -2093,7 +2093,7 @@ describe("UniswapV3Utils", function () {
                 0,
                 0,
                 uniswapV3Deployer.address,
-                4102444800n
+                deadline
             ]);
 
             await time.increase(40);
@@ -2302,7 +2302,7 @@ describe("UniswapV3Utils", function () {
                 0,
                 0,
                 uniswapV3Deployer.address,
-                4102444800n
+                deadline
             ]);
 
             await time.increase(40);
