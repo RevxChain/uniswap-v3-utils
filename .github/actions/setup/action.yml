@@ -1,0 +1,21 @@
+name: Setup
+description: Environment setup
+runs:
+  using: composite
+  steps:
+    - name: Install Node 
+      uses: actions/setup-node@v6
+      with:
+        node-version: 22.17
+    - name: Install npm dependencies
+      shell: bash
+      run: npm i
+    - name: Install submodule dependencies
+      shell: bash
+      run: git submodule update --init --recursive
+    - name: Install solc
+      shell: bash
+      run: |
+        wget -q https://github.com/argotorg/solidity/releases/download/v0.8.27/solc-static-linux
+        chmod +x solc-static-linux
+        sudo mv solc-static-linux /usr/local/bin/solc

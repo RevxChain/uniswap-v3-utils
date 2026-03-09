@@ -1,0 +1,16 @@
+name: tests
+on: 
+    - push
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v6
+          - name: Set up environment
+            uses: ./.github/actions/setup
+          - name: Run tests
+            run: npx hardhat test
+          - name: Run coverage
+            run: npx hardhat coverage
+          - name: Check coverage
+            run: npx istanbul check-coverage --statements 90 --branches 90 --functions 90 --lines 90
