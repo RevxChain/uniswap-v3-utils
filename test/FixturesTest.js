@@ -12,7 +12,7 @@ describe("FixturesTest", function () {
         const {
             weth, uniswapFactory, descriptorLibrary, tokenDescriptor, positionManager, swapRouter01, swapRouter02, quoter01, quoter02,
             tickLens, multicall, multicall2, permit2
-        } = await UniswapV3MainnetForkSetup(43114);
+        } = await UniswapV3MainnetForkSetup(1);
 
         const [, , , , , , , , , , , , , , , , , , , localSigner] = await ethers.getSigners();
 

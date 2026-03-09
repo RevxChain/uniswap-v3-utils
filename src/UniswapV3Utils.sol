@@ -134,6 +134,35 @@ library UniswapV3Utils {
         }
     }
 
+    function getProportionalAmounts(
+        address pool,
+        uint256 amount0,
+        uint256 amount1,
+        int24 tickLower,
+        int24 tickUpper
+    ) internal view returns(uint256 amount0Required, uint256 amount1Required) {
+        if (tickLower > tickUpper) return (0, 0);
+
+        (
+            address _token0,
+            address _token1,
+            int24 _tick
+        ) = (IUniswapV3Pool(pool).token0(), IUniswapV3Pool(pool).token1(), IUniswapV3PoolTyped(pool).slot0().tick);
+
+        uint256 _singleAmount = _tick >= 0 ?
+            _tick.getQuoteAtTick(uint128(amount1), _token1, _token0) + amount0 :
+            _tick.getQuoteAtTick(uint128(amount0), _token0, _token1) + amount1;
+
+        return _getProportionalAmounts(
+            _tick,
+            _token0,
+            _token1,
+            _singleAmount,
+            tickLower.getSqrtRatioAtTick(),
+            tickUpper.getSqrtRatioAtTick()
+        );
+    }
+
     function getValidTick(uint160 sqrtPriceX96, int24 tickSpacing) internal pure returns(int24 validTick) {
         if (sqrtPriceX96 >= TickMath.MAX_SQRT_RATIO) sqrtPriceX96 = TickMath.MAX_SQRT_RATIO - 1;
         if (TickMath.MIN_SQRT_RATIO > sqrtPriceX96) sqrtPriceX96 = TickMath.MIN_SQRT_RATIO;
@@ -233,4 +262,34 @@ library UniswapV3Utils {
         return abi.decode(response, (string));
     }
 
+    function _getProportionalAmounts(
+        int24 currentTick,
+        address token0,
+        address token1,
+        uint256 amount,
+        uint160 lowerSqrtPriceX96,
+        uint160 upperSqrtPriceX96
+    ) private pure returns(uint256 amount0Required, uint256 amount1Required) {
+        uint160 _currentSqrtPriceX96 = currentTick.getSqrtRatioAtTick();
+
+        if (_currentSqrtPriceX96 <= lowerSqrtPriceX96) {
+            return currentTick >= 0 ? (amount, 0) : (currentTick.getQuoteAtTick(uint128(amount), token1, token0), 0);
+        } else if (_currentSqrtPriceX96 < upperSqrtPriceX96) {
+            uint256 _swapAmount;
+
+            {
+                uint256 _numerator = uint256(upperSqrtPriceX96).mulDiv(_currentSqrtPriceX96 - lowerSqrtPriceX96, FixedPoint96.Q96);
+                uint256 _denominator = uint256(_currentSqrtPriceX96).mulDiv(upperSqrtPriceX96 - _currentSqrtPriceX96, FixedPoint96.Q96);
+                uint256 _temp = _numerator.mulDiv(FixedPoint96.Q96, _denominator);
+                uint256 _factor = FixedPoint96.Q96.mulDiv(FixedPoint96.Q96, _temp + FixedPoint96.Q96);
+                _swapAmount = amount.mulDiv(FixedPoint96.Q96 - _factor, FixedPoint96.Q96);
+            }
+
+            return currentTick >= 0 ?
+                (amount - _swapAmount, currentTick.getQuoteAtTick(uint128(_swapAmount), token0, token1)) :
+                (currentTick.getQuoteAtTick(uint128(_swapAmount), token1, token0), amount - _swapAmount);
+        } else {
+            return currentTick >= 0 ? (0, currentTick.getQuoteAtTick(uint128(amount), token0, token1)) : (0, amount);
+        }
+    }
 }

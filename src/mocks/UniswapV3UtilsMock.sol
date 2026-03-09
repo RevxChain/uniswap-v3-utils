@@ -66,6 +66,22 @@ contract UniswapV3UtilsMock {
         );
     }
 
+    function getProportionalAmounts(
+        address pool,
+        uint256 amount0,
+        uint256 amount1,
+        int24 tickLower,
+        int24 tickUpper
+    ) external view returns(uint256 amount0Required, uint256 amount1Required) {
+        return UniswapV3Utils.getProportionalAmounts(
+            pool,
+            amount0,
+            amount1,
+            tickLower,
+            tickUpper
+        );
+    }
+
     function getValidTick(uint160 sqrtPriceX96, int24 tickSpacing) external pure returns(int24 validTick) {
         return UniswapV3Utils.getValidTick(sqrtPriceX96, tickSpacing);
     }
