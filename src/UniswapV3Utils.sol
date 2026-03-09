@@ -17,14 +17,37 @@ import {FixedPointMathLib} from "solmate/src/utils/FixedPointMathLib.sol";
 import {INonfungiblePositionManagerTyped} from "./interfaces/INonfungiblePositionManagerTyped.sol";
 import {IUniswapV3PoolTyped} from "./interfaces/IUniswapV3PoolTyped.sol";
 
+/**
+ * @title UniswapV3Utils
+ * @notice Library providing utility functions for UniswapV3 interactions.
+ * @dev This library handles complex calculations related to Time-Weighted Average Price (TWAP), liquidity position amounts,
+ * price conversions, sqrtPriceX96, and fee accumulation. It uses fixed-point math for precise calculations without 
+ * floating-point precision loss. All price calculations depend on pool data integrity and pool reliability. 
+ * TWAP queries may revert if insufficient observation data exists. Use force-flag alternative functions cautiously as they fallback 
+ * to spot price.
+ * 
+ * IMPORTANT: To increase the flexibility of the library usage, its functions DO NOT verify the correctness of the input data and 
+ * DO NOT throw errors in case of unexpected behavior. You MUST validate the input before calling the library function and validate 
+ * the output after.
+ */
 library UniswapV3Utils {
     using FixedPointMathLib for uint256;
     using OracleLibrary for int24;
     using FullMath for uint256;
     using TickMath for *;
     
+    /// @notice Default TWAP observation window of 15 minutes used when no specific time window is provided.
     uint32 constant private DEFAULT_TWAP_AGE = 15 minutes;
 
+    /**
+     * @notice Calculates the output amount for a token swap using the default TWAP observation window.
+     * @dev Delegates to the full {getTimeWeightedAmountOut} function with {DEFAULT_TWAP_AGE} and {force}=false.
+     * @param pool Address of the {UniswapV3Pool} to query for price data.
+     * @param tokenIn Address of the input token being quoted.
+     * @param amountIn Amount of {tokenIn} to quote.
+     * @return amountOut Estimated output amount of the paired token based on TWAP quote.
+     * @custom:reverts If the {UniswapV3Pool} has insufficient observation data for {DEFAULT_TWAP_AGE} window.
+     */
     function getTimeWeightedAmountOut(
         address pool,
         address tokenIn,
@@ -33,6 +56,16 @@ library UniswapV3Utils {
         return getTimeWeightedAmountOut(pool, tokenIn, amountIn, DEFAULT_TWAP_AGE, false);
     }
 
+    /**
+     * @notice Calculates the output amount using TWAP with fallback to spot price if observation data unavailable.
+     * @dev Delegates to the full {getTimeWeightedAmountOut} function with {DEFAULT_TWAP_AGE} and {force}=true.
+     * Returns spot price quote if TWAP observation data is insufficient (does not revert).
+     * Use cautiously as spot price is susceptible to manipulation.
+     * @param pool Address of the {UniswapV3Pool} to query for price data.
+     * @param tokenIn Address of the input token being quoted.
+     * @param amountIn Amount of {tokenIn} to quote.
+     * @return amountOut Estimated output amount based on TWAP if available, otherwise current spot price.
+     */
     function getForceTimeWeightedAmountOut(
         address pool,
         address tokenIn,
@@ -41,6 +74,21 @@ library UniswapV3Utils {
         return getTimeWeightedAmountOut(pool, tokenIn, amountIn, DEFAULT_TWAP_AGE, true);
     }
 
+    /**
+     * @notice Calculates the output amount for a token swap using a custom TWAP observation window with optional force fallback.
+     * @dev Performs a staticcall to {UniswapV3Pool.observe} to retrieve historical tick data.
+     * Calculates the average tick over the specified {secondsAgo} window, then quotes output at that average.
+     * If TWAP calculation succeeds, returns the TWAP-based quote. If {force} is false and observation fails,
+     * the provided revert message from the pool is decoded and re-thrown. If {force} is true, falls back to spot price.
+     * @param pool Address of the {UniswapV3Pool} to query for TWAP data.
+     * @param tokenIn Address of the input token being quoted.
+     * @param amountIn Amount of {tokenIn} to quote.
+     * @param secondsAgo Number of seconds into the past to use for TWAP calculation window.
+     * @param force If true, falls back to current spot price if {UniswapV3Pool} observation fails;
+     *        if false, reverts with pool's revert message if observation fails.
+     * @return amountOut Estimated output amount based on TWAP average price, or spot price if {force}=true and observation fails.
+     * @custom:reverts If {force}=false and observation fails, reverts with encoded error message from {UniswapV3Pool}.
+     */
     function getTimeWeightedAmountOut(
         address pool,
         address tokenIn,
@@ -78,6 +126,16 @@ library UniswapV3Utils {
         }
     }
 
+    /**
+     * @notice Calculates the output amount for a token swap at the current spot price.
+     * @dev Retrieves the current tick from the pool's {slot0} and quotes the output amount at that tick price.
+     * This uses the instantaneous spot price without time-weighted averaging, making it susceptible to
+     * manipulation attacks. Only use when TWAP is unavailable or immediate pricing is required.
+     * @param pool Address of the {UniswapV3Pool} to query current price.
+     * @param tokenIn Address of the input token being quoted.
+     * @param amountIn Amount of {tokenIn} to quote.
+     * @return amountOut Output amount of the paired token at current spot price.
+     */
     function getAmountOut(address pool, address tokenIn, uint256 amountIn) internal view returns(uint256 amountOut) {
         (
             /* uint160 _sqrtPriceX96 */,
@@ -92,6 +150,19 @@ library UniswapV3Utils {
         return _getQuoteAtTick(pool, _tick, tokenIn, amountIn);
     }
 
+    /**
+     * @notice Calculates the upper price boundary (sqrtPriceX96) for a liquidity position.
+     * @dev Computes the maximum price at which both token amounts would be consumed based on the current price.
+     * Uses fixed-point math to handle the Q96 precision format. Clamped to {TickMath.MAX_SQRT_RATIO - 1} to ensure validity.
+     * @param lowerSqrtPriceX96 The lower price boundary in sqrtPriceX96 format (Q64.96).
+     * @param currentSqrtPriceX96 The pool's current price in sqrtPriceX96 format (Q64.96).
+     * @param amount0 Amount of token0 available for the position.
+     * @param amount1 Amount of token1 available for the position.
+     * @return upperSqrtPriceX96 The calculated upper price boundary clamped to valid range, in sqrtPriceX96 format.
+     * 
+     * IMPORTANT: In cases of very wide ranges, very narrow ranges, as well as extremely disproportionate amounts, the result may
+     * differ significantly from the benchmark. Always verify remaining amounts (dust) after using this calculation for interaction.
+     */
     function getUpperSqrtPriceX96(
         uint160 lowerSqrtPriceX96,
         uint160 currentSqrtPriceX96,
@@ -113,6 +184,20 @@ library UniswapV3Utils {
         }
     }
 
+    /**
+     * @notice Calculates the lower price boundary (sqrtPriceX96) for a liquidity position.
+     * @dev Computes the minimum price at which both token amounts would be consumed based on the current price.
+     * Uses fixed-point math to handle the Q96 precision format. Clamped to {TickMath.MIN_SQRT_RATIO} to ensure validity.
+     * Mirror function to {getUpperSqrtPriceX96} for determining position lower bound.
+     * @param currentSqrtPriceX96 The pool's current price in sqrtPriceX96 format (Q64.96).
+     * @param upperSqrtPriceX96 The upper price boundary in sqrtPriceX96 format (Q64.96).
+     * @param amount0 Amount of token0 available for the position.
+     * @param amount1 Amount of token1 available for the position.
+     * @return lowerSqrtPriceX96 The calculated lower price boundary clamped to valid range, in sqrtPriceX96 format.
+     * 
+     * IMPORTANT: In cases of very wide ranges, very narrow ranges, as well as extremely disproportionate amounts, the result may
+     * differ significantly from the benchmark. Always verify remaining amounts (dust) after using this calculation for interaction.
+     */
     function getLowerSqrtPriceX96(
         uint160 currentSqrtPriceX96,
         uint160 upperSqrtPriceX96,
@@ -134,6 +219,23 @@ library UniswapV3Utils {
         }
     }
 
+    /**
+     * @notice Calculates the proportional amounts of both tokens required to provide liquidity within a specified price range.
+     * @dev Adjusts the input amounts to match the pool's current price and the specified tick range.
+     * If current tick is outside the range, rebalances amounts to consist of only the token needed at current price.
+     * Within range, calculates the optimal ratio based on price range boundaries and current position.
+     * If {tickLower} > {tickUpper}, returns (0, 0) as invalid range.
+     * @param pool Address of the {UniswapV3Pool} to fetch current price and tick range.
+     * @param amount0 Maximum amount of token0 available.
+     * @param amount1 Maximum amount of token1 available.
+     * @param tickLower Lower price boundary tick for the liquidity position.
+     * @param tickUpper Upper price boundary tick for the liquidity position.
+     * @return amount0Required Proportional amount of token0 required for balanced liquidity provision.
+     * @return amount1Required Proportional amount of token1 required for balanced liquidity provision.
+     * 
+     * IMPORTANT: In cases of very wide ranges, very narrow ranges, as well as extremely disproportionate amounts, the result may
+     * differ significantly from the benchmark. Always verify remaining amounts (dust) after using this calculation for interaction.
+     */
     function getProportionalAmounts(
         address pool,
         uint256 amount0,
@@ -163,6 +265,14 @@ library UniswapV3Utils {
         );
     }
 
+    /**
+     * @notice Finds the nearest valid tick for a given square root price, aligned to the pool's tick spacing.
+     * @dev Converts the {sqrtPriceX96} to a tick value and delegates to {getValidTick} for alignment.
+     * First clamps {sqrtPriceX96} to valid range [TickMath.MIN_SQRT_RATIO, TickMath.MAX_SQRT_RATIO - 1].
+     * @param sqrtPriceX96 The square root of the price in Q64.96 format.
+     * @param tickSpacing The tick spacing for the position (e.g., 1, 10, 60, 200).
+     * @return validTick The nearest tick to the given price, rounded to align with {tickSpacing}.
+     */
     function getValidTick(uint160 sqrtPriceX96, int24 tickSpacing) internal pure returns(int24 validTick) {
         if (sqrtPriceX96 >= TickMath.MAX_SQRT_RATIO) sqrtPriceX96 = TickMath.MAX_SQRT_RATIO - 1;
         if (TickMath.MIN_SQRT_RATIO > sqrtPriceX96) sqrtPriceX96 = TickMath.MIN_SQRT_RATIO;
@@ -170,6 +280,14 @@ library UniswapV3Utils {
         return getValidTick(sqrtPriceX96.getTickAtSqrtRatio(), tickSpacing);
     }
 
+    /**
+     * @notice Finds the nearest valid tick aligned to the given tick spacing.
+     * @dev Rounds the provided {tick} to the nearest multiple of {tickSpacing}.
+     * Clamps final result to [{TickMath.MIN_TICK}, {TickMath.MAX_TICK}] adjusted for spacing.
+     * @param tick The target tick to align.
+     * @param tickSpacing The tick spacing for alignment (e.g., 1, 10, 60, 200).
+     * @return validTick The nearest tick aligned to {tickSpacing}, clamped to valid tick range.
+     */
     function getValidTick(int24 tick, int24 tickSpacing) internal pure returns(int24 validTick) {
         int24 _remainder = tick % tickSpacing;
         validTick = tick - _remainder;
@@ -179,6 +297,18 @@ library UniswapV3Utils {
         if (TickMath.MIN_TICK > validTick) return TickMath.MIN_TICK - TickMath.MIN_TICK % tickSpacing;
     }
 
+    /**
+     * @notice Calculates the effective square root of price (in Q64.96 format) from the ratio of two token amounts.
+     * @dev Computes sqrtPriceX96 = sqrt(amount1 / amount0) * Q96 using fixed-point arithmetic.
+     * Returns 0 if either {amount0} or {amount1} is 0 (undefined price ratio).
+     * Result is clamped to the valid range [TickMath.MIN_SQRT_RATIO, TickMath.MAX_SQRT_RATIO - 1].
+     * @param amount0 Maximum amount of token0 available.
+     * @param amount1 Maximum amount of token1 available.
+     * @return sqrtPriceX96 The calculated square root price in Q64.96 format, or 0 if ratio undefined.
+     * 
+     * IMPORTANT: In cases of very wide ranges, very narrow ranges, as well as extremely disproportionate amounts, the result may
+     * differ significantly from the benchmark. Always verify remaining amounts (dust) after using this calculation for interaction.
+     */
     function getSqrtPriceX96(uint256 amount0, uint256 amount1) internal pure returns(uint160 sqrtPriceX96) {
         if (amount0 == 0 || amount1 == 0) return 0;
 
@@ -193,6 +323,15 @@ library UniswapV3Utils {
         }
     }
 
+    /**
+     * @notice Retrieves the accumulated trading fees for a UniswapV3 liquidity position.
+     * @dev Queries the position's tick range and current pool tick to calculate accumulated fees in the position.
+     * @param positionManager Address of the {NonfungiblePositionManager} holding the position.
+     * @param pool Address of the {UniswapV3Pool} where position resides.
+     * @param tokenId The NFT token ID representing the liquidity position.
+     * @return amount0 Accumulated fees in token0.
+     * @return amount1 Accumulated fees in token1.
+     */
     function getAccumulatedFees(
         address positionManager,
         address pool,
@@ -235,6 +374,15 @@ library UniswapV3Utils {
         );
     }
 
+    /**
+     * @notice Calculates the actual token amounts (amount0 and amount1) represented by a position's liquidity.
+     * @dev Uses the position's liquidity, tick boundaries, and current pool price to compute the token amounts.
+     * @param positionManager Address of the {NonfungiblePositionManager} holding the position.
+     * @param pool Address of the {UniswapV3Pool} where position resides.
+     * @param tokenId The NFT token ID representing the liquidity position.
+     * @return amount0 Current amount of token0 represented by the position's liquidity.
+     * @return amount1 Current amount of token1 represented by the position's liquidity.
+     */
     function getPositionLiquidity(
         address positionManager,
         address pool,
@@ -248,6 +396,16 @@ library UniswapV3Utils {
         );
     }
 
+    /**
+     * @notice Calculates the output amount for a swap at a specific pool tick price.
+     * @dev Internal helper that validates that {tokenIn} is one of the pool's tokens and quotes the swap output.
+     * Returns 0 if {tokenIn} is neither {token0} nor {token1}.
+     * @param pool Address of the {UniswapV3Pool}.
+     * @param tick The tick at which to calculate the price quote.
+     * @param tokenIn Address of the input token.
+     * @param amountIn Amount of {tokenIn} to quote.
+     * @return amountOut Calculated output amount of the paired token at the given {tick}.
+     */
     function _getQuoteAtTick(address pool, int24 tick, address tokenIn, uint256 amountIn) private view returns(uint256 amountOut) {
         (address _token0, address _token1) = (IUniswapV3Pool(pool).token0(), IUniswapV3Pool(pool).token1());
 
@@ -256,12 +414,28 @@ library UniswapV3Utils {
         return tick.getQuoteAtTick(uint128(amountIn), tokenIn, tokenIn == _token0 ? _token1 : _token0);
     }
 
+    /**
+     * @notice Extracts and decodes the revert message from encoded call response data.
+     * @param response The encoded response bytes from a failed call.
+     * @return revertMessage The decoded error message string, or "No reason" if not found.
+     */
     function _getRevertMessage(bytes memory response) private pure returns(string memory revertMessage) {
         if (response.length < 68) return "No reason";
         assembly { response := add(response, 0x04) }
         return abi.decode(response, (string));
     }
 
+    /**
+     * @notice Internal helper calculating proportional token amounts for a position within specified price bounds.
+     * @param currentTick The pool's current tick.
+     * @param token0 Address of token0.
+     * @param token1 Address of token1.
+     * @param amount Total single amount available to split between tokens.
+     * @param lowerSqrtPriceX96 Lower price boundary in sqrtPriceX96 format.
+     * @param upperSqrtPriceX96 Upper price boundary in sqrtPriceX96 format.
+     * @return amount0Required Calculated proportional amount of token0.
+     * @return amount1Required Calculated proportional amount of token1.
+     */
     function _getProportionalAmounts(
         int24 currentTick,
         address token0,
