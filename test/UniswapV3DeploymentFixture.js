@@ -1,5 +1,8 @@
 const { loadFixture, mine } = require("@nomicfoundation/hardhat-network-helpers");
 
+const uniswapV3PoolBytecode = require('../build/@uniswap/v3-core-0.7/contracts/UniswapV3Pool.sol/UniswapV3Pool.json').bytecode;
+const uniswapV3PoolAbi = require('../build/@uniswap/v3-core-0.7/contracts/UniswapV3Pool.sol/UniswapV3Pool.json').abi;
+
 async function UniswapV3DeploymentFixture() {
     const [, , , , , , , , , , , , , , , , , , , uniswapV3Deployer] = await ethers.getSigners();
 
@@ -126,7 +129,7 @@ function createUniswapV3DeploymentFixtureCustomWETH(weth) {
 
         return {
             uniswapV3Deployer, weth, uniswapFactory, descriptorLibrary, tokenDescriptor, positionManager, swapRouter01, swapRouter02, quoter01, quoter02,
-            tickLens, multicall, multicall2, permit2
+            tickLens, multicall, multicall2, permit2, uniswapV3PoolBytecode, uniswapV3PoolAbi
         };
     }
 
@@ -199,7 +202,7 @@ async function UniswapV3MainnetForkSetup(chainId) {
 
     return {
         weth, uniswapFactory, descriptorLibrary, tokenDescriptor, positionManager, swapRouter01, swapRouter02, quoter01, quoter02,
-        tickLens, multicall, multicall2, permit2
+        tickLens, multicall, multicall2, permit2, uniswapV3PoolBytecode, uniswapV3PoolAbi
     };
 }
 
