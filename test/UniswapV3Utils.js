@@ -973,15 +973,14 @@ describe("UniswapV3Utils", function () {
 
             const pools = [wethTokenPool, tokenUsdtPool, wethUsdcPool, usdtUsdcPool];
 
-            await token.connect(uniswapV3Deployer).approve(swapRouter02.target, maxUint256);
-            await token.connect(uniswapV3Deployer).mint(uniswapV3Deployer, maxUint256 - await token.totalSupply());
+            await weth.connect(uniswapV3Deployer).approve(swapRouter02.target, maxUint256);
 
             await swapRouter02.connect(uniswapV3Deployer).exactInputSingle([
-                token.target,
                 weth.target,
+                token.target,
                 await wethTokenPool.fee(),
                 uniswapV3Deployer.address,
-                convert(1000000n, 18n),
+                convert(100n, 18n),
                 0n,
                 0n
             ]);
@@ -1484,6 +1483,8 @@ describe("UniswapV3Utils", function () {
             await weth.connect(userThree).transfer(uniswapV3Deployer.address, await weth.balanceOf(userThree));
             await weth.connect(userFour).transfer(uniswapV3Deployer.address, await weth.balanceOf(userFour.address));
 
+            await token.connect(uniswapV3Deployer).mint(uniswapV3Deployer.address, maxUint256 - await token.totalSupply());
+
             await weth.connect(uniswapV3Deployer).approve(swapRouter02.target, maxUint256);
             await usdc.connect(uniswapV3Deployer).approve(swapRouter02.target, maxUint256);
             await token.connect(uniswapV3Deployer).approve(swapRouter02.target, maxUint256);
@@ -1502,11 +1503,11 @@ describe("UniswapV3Utils", function () {
                 weth.target < token.target ? weth.target : token.target,
                 weth.target < token.target ? token.target : weth.target,
                 await wethTokenPool.fee(),
-                await uniswapV3UtilsMock["getValidTick(int24,int24)"]((await wethTokenPool.slot0())[1] - 100n, tickSpacing),
+                await uniswapV3UtilsMock["getValidTick(int24,int24)"]((await wethTokenPool.slot0())[1] - 10000n, tickSpacing),
                 await uniswapV3UtilsMock["getValidTick(int24,int24)"](
                     await uniswapV3UtilsMock.getTickAtSqrtRatio(
                         await uniswapV3UtilsMock.getUpperSqrtPriceX96(
-                            await uniswapV3UtilsMock.getSqrtRatioAtTick((await wethTokenPool.slot0())[1] - 100n),
+                            await uniswapV3UtilsMock.getSqrtRatioAtTick((await wethTokenPool.slot0())[1] - 10000n),
                             (await wethTokenPool.slot0())[0],
                             weth.target < token.target ? wethAmount : convert(500000000n, 18n),
                             weth.target < token.target ? convert(500000000n, 18n) : wethAmount
@@ -1521,25 +1522,23 @@ describe("UniswapV3Utils", function () {
                 deadline
             ]);
 
-            while ((await wethTokenPool.slot0())[1] - 1000n < 336200n) {
-                await swapRouter02.connect(uniswapV3Deployer).exactInputSingle([
-                    weth.target,
-                    token.target,
-                    await wethTokenPool.fee(),
-                    uniswapV3Deployer.address,
-                    convert(1n, 18n),
-                    0n,
-                    0n
-                ]);
-            }
+            await swapRouter02.connect(uniswapV3Deployer).exactInputSingle([
+                token.target,
+                weth.target,
+                await wethTokenPool.fee(),
+                uniswapV3Deployer.address,
+                convert(30000n, 18n),
+                0n,
+                0n
+            ]);
 
             const positionLiquidity = await uniswapV3UtilsMock.getPositionLiquidity(positionManager.target, wethTokenPool.target, 5n);
 
             if (weth.target > token.target) {
                 expect(positionLiquidity[0]).to.equal(0n);
-                expect(positionLiquidity[1]).to.equal(126173746900874n);
+                expect(positionLiquidity[1]).to.equal(644866n);
             } else {
-                expect(positionLiquidity[1]).to.equal(126173746900874n);
+                expect(positionLiquidity[1]).to.equal(644866n);
                 expect(positionLiquidity[0]).to.equal(0n);
             }
 
@@ -1547,9 +1546,9 @@ describe("UniswapV3Utils", function () {
 
             if (weth.target > token.target) {
                 expect(feesAfter[0]).to.equal(0n);
-                expect(feesAfter[1]).to.equal(1274482290921n);
+                expect(feesAfter[1]).to.equal(67n);
             } else {
-                expect(feesAfter[1]).to.equal(1274482290921n);
+                expect(feesAfter[1]).to.equal(67n);
                 expect(feesAfter[0]).to.equal(0n);
             }
         });

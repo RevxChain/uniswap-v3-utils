@@ -12,3 +12,4 @@ List of precompiled contracts stored as JSON files with ABI and bytecode to simp
 | @uniswap/v3-periphery-0.7 | `artifacts` folder direct copy | [npm/@uniswap/v3-periphery](https://www.npmjs.com/package/@uniswap/v3-periphery/v/1.4.4)
 | @uniswap/swap-router-contracts |  `artifacts` folder direct copy | [npm/@uniswap/swap-router-contracts](https://www.npmjs.com/package/@uniswap/swap-router-contracts/v/1.3.1) (package deprecated)
 | @uniswap/Permit2 | compiled locally using `solc.compilers.json:permit2` | [github/@uniswap/permit2](https://github.com/Uniswap/permit2/blob/main/src/Permit2.sol)
+| @uniswap/universal-router | `artifacts` folder direct copy | [npm/@uniswap/universal-router](https://www.npmjs.com/package/@uniswap/universal-router/v/2.1.0)

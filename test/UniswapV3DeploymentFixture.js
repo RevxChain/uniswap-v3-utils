@@ -127,9 +127,28 @@ function createUniswapV3DeploymentFixtureCustomWETH(weth) {
         const permit2 = await Permit2.deploy();
         await permit2.waitForDeployment();
 
+        const UniversalRouter = new ethers.ContractFactory(
+            require('../build/@uniswap/universal-router/contracts/UniversalRouter.sol/UniversalRouter.json').abi,
+            require('../build/@uniswap/universal-router/contracts/UniversalRouter.sol/UniversalRouter.json').bytecode,
+            uniswapV3Deployer
+        );
+        const universalRouter = await UniversalRouter.deploy([
+            permit2.target,
+            weth.target,
+            ethers.ZeroAddress,
+            uniswapFactory.target,
+            ethers.ZeroHash,
+            ethers.solidityPackedKeccak256(["bytes"], [uniswapV3PoolBytecode]),
+            ethers.ZeroAddress,
+            positionManager.target,
+            ethers.ZeroAddress,
+            ethers.ZeroAddress
+        ]);
+        await universalRouter.waitForDeployment();
+
         return {
             uniswapV3Deployer, weth, uniswapFactory, descriptorLibrary, tokenDescriptor, positionManager, swapRouter01, swapRouter02, quoter01, quoter02,
-            tickLens, multicall, multicall2, permit2, uniswapV3PoolBytecode, uniswapV3PoolAbi
+            tickLens, multicall, multicall2, permit2, universalRouter, uniswapV3PoolBytecode, uniswapV3PoolAbi
         };
     }
 
@@ -200,9 +219,14 @@ async function UniswapV3MainnetForkSetup(chainId) {
 
     const permit2 = await ethers.getContractAt(require('../build/@uniswap/permit2/Permit2.json').abi, addresses.permit2Address);
 
+    const universalRouter = await ethers.getContractAt(
+        require('../build/@uniswap/universal-router/contracts/UniversalRouter.sol/UniversalRouter.json').abi,
+        addresses.universalRouterAddress
+    );
+
     return {
         weth, uniswapFactory, descriptorLibrary, tokenDescriptor, positionManager, swapRouter01, swapRouter02, quoter01, quoter02,
-        tickLens, multicall, multicall2, permit2, uniswapV3PoolBytecode, uniswapV3PoolAbi
+        tickLens, multicall, multicall2, permit2, universalRouter, uniswapV3PoolBytecode, uniswapV3PoolAbi
     };
 }
 

@@ -131,12 +131,13 @@ Hardhat fixture that deploys the complete UniswapV3 protocol from pre-compiled a
 | [UniswapInterfaceMulticall](https://www.npmjs.com/package/@uniswap/v3-periphery/v/1.4.4) | `build/@uniswap/v3-periphery-0.7/` |
 | [Multicall2](https://github.com/sky-ecosystem/multicall) | `build/sky-ecosystem/multicall/` |
 | [Permit2](https://github.com/Uniswap/permit2) | `build/@uniswap/permit2/` |
+| [UnivesalRouter](https://www.npmjs.com/package/@uniswap/universal-router/v/2.1.0) | `build/@uniswap/universal-router/` |
 
 ### [createUniswapV3DeploymentFixtureCustomWETH()](https://github.com/RevxChain/uniswap-v3-utils/blob/main/test/UniswapV3DeploymentFixture.js#L22)
 
 Hardhat fixture creation function that deploys the complete UniswapV3 protocol from pre-compiled artifacts stored in `build/` with custom `WETH` contract.
 
-### [UniswapV3MainnetForkSetup()](https://github.com/RevxChain/uniswap-v3-utils/blob/main/test/UniswapV3DeploymentFixture.js#L139)
+### [UniswapV3MainnetForkSetup()](https://github.com/RevxChain/uniswap-v3-utils/blob/main/test/UniswapV3DeploymentFixture.js#L158)
 
 The function uses [uniswap.addresses.json](https://github.com/RevxChain/uniswap-v3-utils/blob/main/uniswap.addresses.json) to attach to live deployments for mainnet fork testing.
 
@@ -395,8 +396,8 @@ const { UniswapV3DeploymentFixture } = require("@revxchain/uniswap-v3-utils/test
 
 const {
     uniswapV3Deployer, weth, uniswapFactory, descriptorLibrary, tokenDescriptor, positionManager, 
-    swapRouter01, swapRouter02, quoter01, quoter02, tickLens, multicall, multicall2, permit, 
-    uniswapV3PoolBytecode, uniswapV3PoolAbi
+    swapRouter01, swapRouter02, quoter01, quoter02, tickLens, multicall, multicall2, permit2, 
+    universalRouter, uniswapV3PoolBytecode, uniswapV3PoolAbi
 } = await loadFixture(UniswapV3DeploymentFixture);
 ```
 
@@ -415,12 +416,12 @@ const UniswapV3DeploymentFixtureCustomWETH = createUniswapV3DeploymentFixtureCus
 // initialize fixture
 const {
     uniswapV3Deployer, uniswapFactory, descriptorLibrary, tokenDescriptor, positionManager, 
-    swapRouter01, swapRouter02, quoter01, quoter02, tickLens, multicall, multicall2, permit, 
-    uniswapV3PoolBytecode, uniswapV3PoolAbi
+    swapRouter01, swapRouter02, quoter01, quoter02, tickLens, multicall, multicall2, permit2, 
+    universalRouter, uniswapV3PoolBytecode, uniswapV3PoolAbi
 } = await loadFixture(UniswapV3DeploymentFixtureCustomWETH);
 ```
 
-#### [UniswapV3MainnetForkSetup()](https://github.com/RevxChain/uniswap-v3-utils/blob/main/test/UniswapV3DeploymentFixture.js#L139)
+#### [UniswapV3MainnetForkSetup()](https://github.com/RevxChain/uniswap-v3-utils/blob/main/test/UniswapV3DeploymentFixture.js#L158)
 
 ```js
 const { UniswapV3MainnetForkSetup } = require("@revxchain/uniswap-v3-utils/test/UniswapV3DeploymentFixture.js");
@@ -429,8 +430,8 @@ const targetChainId = 1;
 
 const {
     weth, uniswapFactory, descriptorLibrary, tokenDescriptor, positionManager, 
-    swapRouter01, swapRouter02, quoter01, quoter02, tickLens, multicall, multicall2, permit, 
-    uniswapV3PoolBytecode, uniswapV3PoolAbi
+    swapRouter01, swapRouter02, quoter01, quoter02, tickLens, multicall, multicall2, permit2, 
+    universalRouter, uniswapV3PoolBytecode, uniswapV3PoolAbi
 } = await UniswapV3MainnetForkSetup(targetChainId);
 ```
 ---
