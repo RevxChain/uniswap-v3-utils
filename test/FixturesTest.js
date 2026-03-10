@@ -72,7 +72,7 @@ describe("FixturesTest", function () {
 
         await wethPreDeploy.connect(user).deposit({ value: withDecimals("9000") });
 
-        const UniswapV3DeploymentFixtureCustomWETH = createUniswapV3DeploymentFixtureCustomWETH(wethPreDeploy);
+        const UniswapV3DeploymentFixtureCustomWETH = createUniswapV3DeploymentFixtureCustomWETH(wethPreDeploy.target);
         const {
             weth, tokenDescriptor, positionManager, swapRouter01, swapRouter02, quoter01, quoter02, universalRouter
         } = await loadFixture(UniswapV3DeploymentFixtureCustomWETH);

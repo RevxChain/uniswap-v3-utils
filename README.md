@@ -137,7 +137,7 @@ Hardhat fixture that deploys the complete UniswapV3 protocol from pre-compiled a
 
 Hardhat fixture creation function that deploys the complete UniswapV3 protocol from pre-compiled artifacts stored in `build/` with custom `WETH` contract.
 
-### [UniswapV3MainnetForkSetup()](https://github.com/RevxChain/uniswap-v3-utils/blob/main/test/UniswapV3DeploymentFixture.js#L158)
+### [UniswapV3MainnetForkSetup()](https://github.com/RevxChain/uniswap-v3-utils/blob/main/test/UniswapV3DeploymentFixture.js#L160)
 
 The function uses [uniswap.addresses.json](https://github.com/RevxChain/uniswap-v3-utils/blob/main/uniswap.addresses.json) to attach to live deployments for mainnet fork testing.
 
@@ -407,11 +407,11 @@ const {
 const { loadFixture } = require("@nomicfoundation/hardhat-network-helpers");
 const { createUniswapV3DeploymentFixtureCustomWETH } = require("@revxchain/uniswap-v3-utils/test/UniswapV3DeploymentFixture.js");
 
-// your custom WETH contract (as a contract entity, not just address)
-const weth = ; 
+// your custom WETH's address
+const wethAddress = "0x..."; 
 
-// call function with custom WETH contract
-const UniswapV3DeploymentFixtureCustomWETH = createUniswapV3DeploymentFixtureCustomWETH(weth);
+// call function with custom WETH's address
+const UniswapV3DeploymentFixtureCustomWETH = createUniswapV3DeploymentFixtureCustomWETH(wethAddress);
 
 // initialize fixture
 const {
@@ -421,7 +421,7 @@ const {
 } = await loadFixture(UniswapV3DeploymentFixtureCustomWETH);
 ```
 
-#### [UniswapV3MainnetForkSetup()](https://github.com/RevxChain/uniswap-v3-utils/blob/main/test/UniswapV3DeploymentFixture.js#L158)
+#### [UniswapV3MainnetForkSetup()](https://github.com/RevxChain/uniswap-v3-utils/blob/main/test/UniswapV3DeploymentFixture.js#L160)
 
 ```js
 const { UniswapV3MainnetForkSetup } = require("@revxchain/uniswap-v3-utils/test/UniswapV3DeploymentFixture.js");

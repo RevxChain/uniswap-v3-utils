@@ -14,12 +14,12 @@ async function UniswapV3DeploymentFixture() {
     const weth = await WETH9.deploy();
     await weth.waitForDeployment();
 
-    const UniswapV3DeploymentFixtureCustomWETH = createUniswapV3DeploymentFixtureCustomWETH(weth);
+    const UniswapV3DeploymentFixtureCustomWETH = createUniswapV3DeploymentFixtureCustomWETH(weth.target);
 
     return await loadFixture(UniswapV3DeploymentFixtureCustomWETH);
 }
 
-function createUniswapV3DeploymentFixtureCustomWETH(weth) {
+function createUniswapV3DeploymentFixtureCustomWETH(wethAddress) {
     async function UniswapV3DeploymentFixtureCustomWETH() {
         const [, , , , , , , , , , , , , , , , , , , uniswapV3Deployer] = await ethers.getSigners();
 
@@ -52,7 +52,7 @@ function createUniswapV3DeploymentFixtureCustomWETH(weth) {
             ).bytecode.replace("__$cea9be979eee3d87fb124d6cbb244bb0b5$__", descriptorLibrary.target.slice(2)),
             uniswapV3Deployer
         );
-        const tokenDescriptor = await NonfungibleTokenPositionDescriptor.deploy(weth.target, nativeCurrencyLabel);
+        const tokenDescriptor = await NonfungibleTokenPositionDescriptor.deploy(wethAddress, nativeCurrencyLabel);
         await tokenDescriptor.waitForDeployment();
 
         const NonfungiblePositionManager = new ethers.ContractFactory(
@@ -60,7 +60,7 @@ function createUniswapV3DeploymentFixtureCustomWETH(weth) {
             require('../build/@uniswap/v3-periphery-0.7/contracts/NonfungiblePositionManager.sol/NonfungiblePositionManager.json').bytecode,
             uniswapV3Deployer
         );
-        const positionManager = await NonfungiblePositionManager.deploy(uniswapFactory.target, weth.target, tokenDescriptor.target);
+        const positionManager = await NonfungiblePositionManager.deploy(uniswapFactory.target, wethAddress, tokenDescriptor.target);
         await positionManager.waitForDeployment();
 
         const SwapRouter01 = new ethers.ContractFactory(
@@ -68,7 +68,7 @@ function createUniswapV3DeploymentFixtureCustomWETH(weth) {
             require('../build/@uniswap/v3-periphery-0.7/contracts/SwapRouter.sol/SwapRouter.json').bytecode,
             uniswapV3Deployer
         );
-        const swapRouter01 = await SwapRouter01.deploy(uniswapFactory.target, weth.target);
+        const swapRouter01 = await SwapRouter01.deploy(uniswapFactory.target, wethAddress);
         await swapRouter01.waitForDeployment();
 
         const SwapRouter02 = new ethers.ContractFactory(
@@ -76,7 +76,7 @@ function createUniswapV3DeploymentFixtureCustomWETH(weth) {
             require('../build/@uniswap/swap-router-contracts/contracts/SwapRouter02.sol/SwapRouter02.json').bytecode,
             uniswapV3Deployer
         );
-        const swapRouter02 = await SwapRouter02.deploy(ethers.ZeroAddress, uniswapFactory.target, positionManager.target, weth.target);
+        const swapRouter02 = await SwapRouter02.deploy(ethers.ZeroAddress, uniswapFactory.target, positionManager.target, wethAddress);
         await swapRouter02.waitForDeployment();
 
         const QuoterV1 = new ethers.ContractFactory(
@@ -84,7 +84,7 @@ function createUniswapV3DeploymentFixtureCustomWETH(weth) {
             require('../build/@uniswap/v3-periphery-0.7/contracts/lens/Quoter.sol/Quoter.json').bytecode,
             uniswapV3Deployer
         );
-        const quoter01 = await QuoterV1.deploy(uniswapFactory.target, weth.target);
+        const quoter01 = await QuoterV1.deploy(uniswapFactory.target, wethAddress);
         await quoter01.waitForDeployment();
 
         const QuoterV2 = new ethers.ContractFactory(
@@ -92,7 +92,7 @@ function createUniswapV3DeploymentFixtureCustomWETH(weth) {
             require('../build/@uniswap/v3-periphery-0.7/contracts/lens/QuoterV2.sol/QuoterV2.json').bytecode,
             uniswapV3Deployer
         );
-        const quoter02 = await QuoterV2.deploy(uniswapFactory.target, weth.target);
+        const quoter02 = await QuoterV2.deploy(uniswapFactory.target, wethAddress);
         await quoter02.waitForDeployment();
 
         const TickLens = new ethers.ContractFactory(
@@ -134,7 +134,7 @@ function createUniswapV3DeploymentFixtureCustomWETH(weth) {
         );
         const universalRouter = await UniversalRouter.deploy([
             permit2.target,
-            weth.target,
+            wethAddress,
             ethers.ZeroAddress,
             uniswapFactory.target,
             ethers.ZeroHash,
@@ -145,6 +145,8 @@ function createUniswapV3DeploymentFixtureCustomWETH(weth) {
             ethers.ZeroAddress
         ]);
         await universalRouter.waitForDeployment();
+
+        const weth = await ethers.getContractAt(require('../build/gnosis/canonical-weth/WETH9.json').abi, wethAddress);
 
         return {
             uniswapV3Deployer, weth, uniswapFactory, descriptorLibrary, tokenDescriptor, positionManager, swapRouter01, swapRouter02, quoter01, quoter02,
