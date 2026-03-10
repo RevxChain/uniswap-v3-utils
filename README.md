@@ -265,6 +265,7 @@ import {UniswapV3Utils} from "@revxchain/uniswap-v3-utils/src/UniswapV3Utils.sol
 
 contract MyContract {
 
+    /// @notice Calculates the output amount for a token swap using the default TWAP observation window (15 minutes).
     function getTimeWeightedAmountOut(
         address pool, 
         address tokenIn, 
@@ -273,6 +274,7 @@ contract MyContract {
         return UniswapV3Utils.getTimeWeightedAmountOut(pool, tokenIn, amountIn);
     }
 
+    /// @notice Calculates the output amount using TWAP with fallback to spot price if observation data unavailable.
     function getForceTimeWeightedAmountOut(
         address pool, 
         address tokenIn, 
@@ -281,6 +283,7 @@ contract MyContract {
         return UniswapV3Utils.getForceTimeWeightedAmountOut(pool, tokenIn, amountIn);
     }
 
+    /// @notice Calculates the output amount for a token swap using a custom TWAP observation window with optional force fallback.
     function getTimeWeightedAmountOut(
         address pool, 
         address tokenIn, 
@@ -291,6 +294,7 @@ contract MyContract {
         return UniswapV3Utils.getTimeWeightedAmountOut(pool, tokenIn, amountIn, secondsAgo, force);
     }
 
+    /// @notice Calculates the output amount for a token swap at the current spot price.
     function getAmountOut(
         address pool, 
         address tokenIn, 
@@ -299,6 +303,7 @@ contract MyContract {
         return UniswapV3Utils.getAmountOut(pool, tokenIn, amountIn);
     }
 
+    /// @notice Calculates the upper price boundary (sqrtPriceX96) for a liquidity position.
     function getUpperSqrtPriceX96(
         uint160 lowerSqrtPriceX96, 
         uint160 currentSqrtPriceX96,
@@ -313,6 +318,7 @@ contract MyContract {
         );
     }
 
+    /// @notice Calculates the lower price boundary (sqrtPriceX96) for a liquidity position.
     function getLowerSqrtPriceX96(
         uint160 currentSqrtPriceX96,
         uint160 upperSqrtPriceX96,
@@ -327,6 +333,7 @@ contract MyContract {
         );
     }
 
+    /// @notice Calculates the proportional amounts of both tokens required to provide liquidity within a specified price range.
     function getProportionalAmounts(
         address pool,
         uint256 amount0,
@@ -343,18 +350,22 @@ contract MyContract {
         );
     }
 
+    /// @notice Finds the nearest valid tick for a given square root price, aligned to the pool's tick spacing.
     function getValidTick(uint160 sqrtPriceX96, int24 tickSpacing) external pure returns(int24 validTick) {
         return UniswapV3Utils.getValidTick(sqrtPriceX96, tickSpacing);
     }
 
+    /// @notice Finds the nearest valid tick aligned to the given tick spacing.
     function getValidTick(int24 tick, int24 tickSpacing) external pure returns(int24 validTick) {
         return UniswapV3Utils.getValidTick(tick, tickSpacing);
     }
 
-    function getSqrtPriceX96(uint256 balance0, uint256 balance1) external pure returns(uint160 sqrtPriceX96) {
-        return UniswapV3Utils.getSqrtPriceX96(balance0, balance1);
+    /// @notice Calculates the effective square root of price (in Q64.96 format) from the ratio of two token amounts.
+    function getSqrtPriceX96(uint256 amount0, uint256 amount1) external pure returns(uint160 sqrtPriceX96) {
+        return UniswapV3Utils.getSqrtPriceX96(amount0, amount1);
     }
 
+    /// @notice Calculates the accumulated trading fees for a UniswapV3 liquidity position.
     function getAccumulatedFees(
         address positionManager, 
         address pool, 
@@ -363,6 +374,7 @@ contract MyContract {
         return UniswapV3Utils.getAccumulatedFees(positionManager, pool, tokenId);
     }
 
+    /// @notice Calculates the principal token amounts (amount0 and amount1) represented by a position's liquidity.
     function getPositionLiquidity(
         address positionManager, 
         address pool, 

@@ -32,14 +32,14 @@ interface IUniswapV3PoolTyped {
     }
 
     /**
-     * @notice Retrieves the current pool state snapshot from {slot0}.
+     * @notice Returns the current pool state snapshot from {slot0}.
      * @dev Returns the complete {Slot0} struct containing current price, tick, and oracle state.
      * @return slot0Info The {Slot0} struct with current pool state.
      */
     function slot0() external view returns(Slot0 memory slot0Info);
 
     /**
-     * @notice Retrieves the accumulated fee growth state for a specific tick.
+     * @notice Returns the accumulated fee growth state for a specific tick.
      * @param tick The tick to query fee and liquidity state for.
      * @return tickInfo Returns the {Tick.Info} struct containing fee accounting and boundary data for the given {tick}:
      * - liquidityGross: The total position liquidity that references this tick.

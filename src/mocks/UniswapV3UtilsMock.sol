@@ -90,8 +90,8 @@ contract UniswapV3UtilsMock {
         return UniswapV3Utils.getValidTick(tick, tickSpacing);
     }
 
-    function getSqrtPriceX96(uint256 balance0, uint256 balance1) external pure returns(uint160 sqrtPriceX96) {
-        return UniswapV3Utils.getSqrtPriceX96(balance0, balance1);
+    function getSqrtPriceX96(uint256 amount0, uint256 amount1) external pure returns(uint160 sqrtPriceX96) {
+        return UniswapV3Utils.getSqrtPriceX96(amount0, amount1);
     }
 
     function getAccumulatedFees(

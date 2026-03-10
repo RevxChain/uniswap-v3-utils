@@ -76,7 +76,7 @@ library UniswapV3Utils {
 
     /**
      * @notice Calculates the output amount for a token swap using a custom TWAP observation window with optional force fallback.
-     * @dev Performs a staticcall to {UniswapV3Pool.observe} to retrieve historical tick data.
+     * @dev Performs a staticcall to {UniswapV3Pool.observe} to get historical tick data.
      * Calculates the average tick over the specified {secondsAgo} window, then quotes output at that average.
      * If TWAP calculation succeeds, returns the TWAP-based quote. If {force} is false and observation fails,
      * the provided revert message from the pool is decoded and re-thrown. If {force} is true, falls back to spot price.
@@ -324,7 +324,7 @@ library UniswapV3Utils {
     }
 
     /**
-     * @notice Retrieves the accumulated trading fees for a UniswapV3 liquidity position.
+     * @notice Calculates the accumulated trading fees for a UniswapV3 liquidity position.
      * @dev Queries the position's tick range and current pool tick to calculate accumulated fees in the position.
      * @param positionManager Address of the {NonfungiblePositionManager} holding the position.
      * @param pool Address of the {UniswapV3Pool} where position resides.

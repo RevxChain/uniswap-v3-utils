@@ -40,9 +40,9 @@ interface INonfungiblePositionManagerTyped {
     }
 
     /**
-     * @notice Retrieves the complete state data for a specific position NFT.
+     * @notice Returns the complete state data for a specific position NFT.
      * @dev Returns the full {Position} struct for the given {tokenId}.
-     * @param tokenId The NFT token ID of the position to retrieve.
+     * @param tokenId The NFT token ID of the position to return.
      * @return position The {Position} struct containing all position data.
      */
     function positions(uint256 tokenId) external view returns(Position memory position);
