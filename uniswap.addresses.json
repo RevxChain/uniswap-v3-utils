@@ -28,7 +28,7 @@
         "tickLensAddress": "0xD5D76fa166AB8d8AD4C9f61AaA81457b66cBE443",
         "multicallAddress": "0xB7610f9b733e7d45184be3a1bc966960ccc54f0B",
         "multicall2Address": "0x0000000000000000000000000000000000000000",
-        "permit2Address": "0x0000000000000000000000000000000000000000",
+        "permit2Address": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
         "universalRouterAddress": "0xEf740bf23aCaE26f6492B10de645D6B98dC8Eaf3"
     },
     "42161": {
