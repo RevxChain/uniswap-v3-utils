@@ -205,6 +205,6 @@
         "multicallAddress": "0x61f3272A3619D9f20788c6822Fed2E5471bFC477",
         "multicall2Address": "0x0000000000000000000000000000000000000000",
         "permit2Address": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
-        "universalRouterAddress": "0x47837eB80DB5908EabbA9105626D9B348bea7B02"
+        "universalRouterAddress": "0x48fD03529D2a91bE835f07f6b72f53b4Aad6093D"
     }
 }
