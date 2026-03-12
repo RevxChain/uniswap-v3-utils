@@ -7,8 +7,8 @@ async function UniswapV3UtilsFixture() {
     const [user, userOne, userTwo, userThree, userFour] = await ethers.getSigners();
 
     const {
-        uniswapV3Deployer, weth, uniswapFactory, descriptorLibrary, tokenDescriptor, positionManager, swapRouter01, swapRouter02, quoter01, quoter02,
-        tickLens, multicall, multicall2, permit2
+        uniswapV3Deployer, weth, uniswapFactory, descriptorLibrary, tokenDescriptor, nonfungiblePositionManager, swapRouter01, 
+        swapRouter02, quoter01, quoter02, tickLens, multicall, multicall2, permit2
     } = await loadFixture(UniswapV3DeploymentFixture);
 
     const stableDecimals = 6n;
@@ -32,7 +32,7 @@ async function UniswapV3UtilsFixture() {
     const wethTokenPool = await createUniswapPool(
         uniswapV3Deployer,
         uniswapFactory,
-        positionManager,
+        nonfungiblePositionManager,
         weth,
         wethAmount,
         token,
@@ -43,7 +43,7 @@ async function UniswapV3UtilsFixture() {
     const tokenUsdtPool = await createUniswapPool(
         uniswapV3Deployer,
         uniswapFactory,
-        positionManager,
+        nonfungiblePositionManager,
         token,
         convert(20_000_000n, tokenDecimals),
         usdt,
@@ -54,7 +54,7 @@ async function UniswapV3UtilsFixture() {
     const wethUsdcPool = await createUniswapPool(
         uniswapV3Deployer,
         uniswapFactory,
-        positionManager,
+        nonfungiblePositionManager,
         weth,
         wethAmount,
         usdc,
@@ -65,7 +65,7 @@ async function UniswapV3UtilsFixture() {
     const usdtUsdcPool = await createUniswapPool(
         uniswapV3Deployer,
         uniswapFactory,
-        positionManager,
+        nonfungiblePositionManager,
         usdt,
         convert(1_000_000n, stableDecimals),
         usdc,
@@ -80,7 +80,7 @@ async function UniswapV3UtilsFixture() {
     await uniswapV3UtilsMock.waitForDeployment();
 
     return {
-        user, userOne, userTwo, userThree, userFour, uniswapV3Deployer, weth, uniswapFactory, descriptorLibrary, tokenDescriptor, positionManager,
+        user, userOne, userTwo, userThree, userFour, uniswapV3Deployer, weth, uniswapFactory, descriptorLibrary, tokenDescriptor, nonfungiblePositionManager,
         swapRouter01, swapRouter02, quoter01, quoter02, tickLens, multicall, multicall2, permit2, usdc, usdt, token, wethTokenPool, tokenUsdtPool,
         wethUsdcPool, usdtUsdcPool, uniswapV3UtilsMock
     };

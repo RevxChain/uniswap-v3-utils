@@ -60,8 +60,8 @@ function createUniswapV3DeploymentFixtureCustomWETH(wethAddress) {
             require('../build/@uniswap/v3-periphery-0.7/contracts/NonfungiblePositionManager.sol/NonfungiblePositionManager.json').bytecode,
             uniswapV3Deployer
         );
-        const positionManager = await NonfungiblePositionManager.deploy(uniswapFactory.target, wethAddress, tokenDescriptor.target);
-        await positionManager.waitForDeployment();
+        const nonfungiblePositionManager = await NonfungiblePositionManager.deploy(uniswapFactory.target, wethAddress, tokenDescriptor.target);
+        await nonfungiblePositionManager.waitForDeployment();
 
         const SwapRouter01 = new ethers.ContractFactory(
             require('../build/@uniswap/v3-periphery-0.7/contracts/SwapRouter.sol/SwapRouter.json').abi,
@@ -76,7 +76,7 @@ function createUniswapV3DeploymentFixtureCustomWETH(wethAddress) {
             require('../build/@uniswap/swap-router-contracts/contracts/SwapRouter02.sol/SwapRouter02.json').bytecode,
             uniswapV3Deployer
         );
-        const swapRouter02 = await SwapRouter02.deploy(ethers.ZeroAddress, uniswapFactory.target, positionManager.target, wethAddress);
+        const swapRouter02 = await SwapRouter02.deploy(ethers.ZeroAddress, uniswapFactory.target, nonfungiblePositionManager.target, wethAddress);
         await swapRouter02.waitForDeployment();
 
         const QuoterV1 = new ethers.ContractFactory(
@@ -140,7 +140,7 @@ function createUniswapV3DeploymentFixtureCustomWETH(wethAddress) {
             ethers.ZeroHash,
             ethers.solidityPackedKeccak256(["bytes"], [uniswapV3PoolBytecode]),
             ethers.ZeroAddress,
-            positionManager.target,
+            nonfungiblePositionManager.target,
             ethers.ZeroAddress,
             ethers.ZeroAddress
         ]);
@@ -149,7 +149,7 @@ function createUniswapV3DeploymentFixtureCustomWETH(wethAddress) {
         const weth = await ethers.getContractAt(require('../build/gnosis/canonical-weth/WETH9.json').abi, wethAddress);
 
         return {
-            uniswapV3Deployer, weth, uniswapFactory, descriptorLibrary, tokenDescriptor, positionManager, swapRouter01, swapRouter02, quoter01, quoter02,
+            uniswapV3Deployer, weth, uniswapFactory, descriptorLibrary, tokenDescriptor, nonfungiblePositionManager, swapRouter01, swapRouter02, quoter01, quoter02,
             tickLens, multicall, multicall2, permit2, universalRouter, uniswapV3PoolBytecode, uniswapV3PoolAbi
         };
     }
@@ -182,7 +182,7 @@ async function UniswapV3MainnetForkSetup(chainId) {
         addresses.tokenDescriptorAddress
     );
 
-    const positionManager = await ethers.getContractAt(
+    const nonfungiblePositionManager = await ethers.getContractAt(
         require('../build/@uniswap/v3-periphery-0.7/contracts/NonfungiblePositionManager.sol/NonfungiblePositionManager.json').abi,
         addresses.positionManagerAddress
     );
@@ -227,7 +227,7 @@ async function UniswapV3MainnetForkSetup(chainId) {
     );
 
     return {
-        weth, uniswapFactory, descriptorLibrary, tokenDescriptor, positionManager, swapRouter01, swapRouter02, quoter01, quoter02,
+        weth, uniswapFactory, descriptorLibrary, tokenDescriptor, nonfungiblePositionManager, swapRouter01, swapRouter02, quoter01, quoter02,
         tickLens, multicall, multicall2, permit2, universalRouter, uniswapV3PoolBytecode, uniswapV3PoolAbi
     };
 }
