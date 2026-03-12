@@ -255,7 +255,7 @@ library UniswapV3Utils {
             _tick.getQuoteAtTick(uint128(amount1), _token1, _token0) + amount0 :
             _tick.getQuoteAtTick(uint128(amount0), _token0, _token1) + amount1;
 
-        return _getProportionalAmounts(
+        return calculateProportionalAmounts(
             _tick,
             _token0,
             _token1,
@@ -397,6 +397,48 @@ library UniswapV3Utils {
     }
 
     /**
+     * @notice Internal helper calculating proportional token amounts for a position within specified price bounds.
+     * @param currentTick The pool's current tick.
+     * @param token0 Address of token0.
+     * @param token1 Address of token1.
+     * @param amount Total single amount available to split between tokens.
+     * @param lowerSqrtPriceX96 Lower price boundary in sqrtPriceX96 format.
+     * @param upperSqrtPriceX96 Upper price boundary in sqrtPriceX96 format.
+     * @return amount0Required Calculated proportional amount of token0.
+     * @return amount1Required Calculated proportional amount of token1.
+     */
+    function calculateProportionalAmounts(
+        int24 currentTick,
+        address token0,
+        address token1,
+        uint256 amount,
+        uint160 lowerSqrtPriceX96,
+        uint160 upperSqrtPriceX96
+    ) internal pure returns(uint256 amount0Required, uint256 amount1Required) {
+        uint160 _currentSqrtPriceX96 = currentTick.getSqrtRatioAtTick();
+
+        if (_currentSqrtPriceX96 <= lowerSqrtPriceX96) {
+            return currentTick >= 0 ? (amount, 0) : (currentTick.getQuoteAtTick(uint128(amount), token1, token0), 0);
+        } else if (_currentSqrtPriceX96 < upperSqrtPriceX96) {
+            uint256 _swapAmount;
+
+            {
+                uint256 _numerator = uint256(upperSqrtPriceX96).mulDiv(_currentSqrtPriceX96 - lowerSqrtPriceX96, FixedPoint96.Q96);
+                uint256 _denominator = uint256(_currentSqrtPriceX96).mulDiv(upperSqrtPriceX96 - _currentSqrtPriceX96, FixedPoint96.Q96);
+                uint256 _temp = _numerator.mulDiv(FixedPoint96.Q96, _denominator);
+                uint256 _factor = FixedPoint96.Q96.mulDiv(FixedPoint96.Q96, _temp + FixedPoint96.Q96);
+                _swapAmount = amount.mulDiv(FixedPoint96.Q96 - _factor, FixedPoint96.Q96);
+            }
+
+            return currentTick >= 0 ?
+                (amount - _swapAmount, currentTick.getQuoteAtTick(uint128(_swapAmount), token0, token1)) :
+                (currentTick.getQuoteAtTick(uint128(_swapAmount), token1, token0), amount - _swapAmount);
+        } else {
+            return currentTick >= 0 ? (0, currentTick.getQuoteAtTick(uint128(amount), token0, token1)) : (0, amount);
+        }
+    }
+
+    /**
      * @notice Calculates the output amount for a swap at a specific pool tick price.
      * @dev Internal helper that validates that {tokenIn} is one of the pool's tokens and quotes the swap output.
      * Returns 0 if {tokenIn} is neither {token0} nor {token1}.
@@ -423,47 +465,5 @@ library UniswapV3Utils {
         if (response.length < 68) return "No reason";
         assembly { response := add(response, 0x04) }
         return abi.decode(response, (string));
-    }
-
-    /**
-     * @notice Internal helper calculating proportional token amounts for a position within specified price bounds.
-     * @param currentTick The pool's current tick.
-     * @param token0 Address of token0.
-     * @param token1 Address of token1.
-     * @param amount Total single amount available to split between tokens.
-     * @param lowerSqrtPriceX96 Lower price boundary in sqrtPriceX96 format.
-     * @param upperSqrtPriceX96 Upper price boundary in sqrtPriceX96 format.
-     * @return amount0Required Calculated proportional amount of token0.
-     * @return amount1Required Calculated proportional amount of token1.
-     */
-    function _getProportionalAmounts(
-        int24 currentTick,
-        address token0,
-        address token1,
-        uint256 amount,
-        uint160 lowerSqrtPriceX96,
-        uint160 upperSqrtPriceX96
-    ) private pure returns(uint256 amount0Required, uint256 amount1Required) {
-        uint160 _currentSqrtPriceX96 = currentTick.getSqrtRatioAtTick();
-
-        if (_currentSqrtPriceX96 <= lowerSqrtPriceX96) {
-            return currentTick >= 0 ? (amount, 0) : (currentTick.getQuoteAtTick(uint128(amount), token1, token0), 0);
-        } else if (_currentSqrtPriceX96 < upperSqrtPriceX96) {
-            uint256 _swapAmount;
-
-            {
-                uint256 _numerator = uint256(upperSqrtPriceX96).mulDiv(_currentSqrtPriceX96 - lowerSqrtPriceX96, FixedPoint96.Q96);
-                uint256 _denominator = uint256(_currentSqrtPriceX96).mulDiv(upperSqrtPriceX96 - _currentSqrtPriceX96, FixedPoint96.Q96);
-                uint256 _temp = _numerator.mulDiv(FixedPoint96.Q96, _denominator);
-                uint256 _factor = FixedPoint96.Q96.mulDiv(FixedPoint96.Q96, _temp + FixedPoint96.Q96);
-                _swapAmount = amount.mulDiv(FixedPoint96.Q96 - _factor, FixedPoint96.Q96);
-            }
-
-            return currentTick >= 0 ?
-                (amount - _swapAmount, currentTick.getQuoteAtTick(uint128(_swapAmount), token0, token1)) :
-                (currentTick.getQuoteAtTick(uint128(_swapAmount), token1, token0), amount - _swapAmount);
-        } else {
-            return currentTick >= 0 ? (0, currentTick.getQuoteAtTick(uint128(amount), token0, token1)) : (0, amount);
-        }
     }
 }

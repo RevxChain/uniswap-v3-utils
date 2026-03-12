@@ -131,7 +131,7 @@ Hardhat fixture that deploys the complete UniswapV3 protocol from pre-compiled a
 | [UniswapInterfaceMulticall](https://www.npmjs.com/package/@uniswap/v3-periphery/v/1.4.4) | `build/@uniswap/v3-periphery-0.7/` |
 | [Multicall2](https://github.com/sky-ecosystem/multicall) | `build/sky-ecosystem/multicall/` |
 | [Permit2](https://github.com/Uniswap/permit2) | `build/@uniswap/permit2/` |
-| [UnivesalRouter](https://www.npmjs.com/package/@uniswap/universal-router/v/2.1.0) | `build/@uniswap/universal-router/` |
+| [UniversalRouter](https://www.npmjs.com/package/@uniswap/universal-router/v/2.1.0) | `build/@uniswap/universal-router/` |
 
 ### [createUniswapV3DeploymentFixtureCustomWETH()](https://github.com/RevxChain/uniswap-v3-utils/blob/main/test/UniswapV3DeploymentFixture.js#L22)
 
@@ -395,7 +395,7 @@ const { loadFixture } = require("@nomicfoundation/hardhat-network-helpers");
 const { UniswapV3DeploymentFixture } = require("@revxchain/uniswap-v3-utils/test/UniswapV3DeploymentFixture.js");
 
 const {
-    uniswapV3Deployer, weth, uniswapFactory, descriptorLibrary, tokenDescriptor, positionManager, 
+    uniswapV3Deployer, weth, uniswapFactory, descriptorLibrary, tokenDescriptor, nonfungiblePositionManager, 
     swapRouter01, swapRouter02, quoter01, quoter02, tickLens, multicall, multicall2, permit2, 
     universalRouter, uniswapV3PoolBytecode, uniswapV3PoolAbi
 } = await loadFixture(UniswapV3DeploymentFixture);
@@ -415,7 +415,7 @@ const UniswapV3DeploymentFixtureCustomWETH = createUniswapV3DeploymentFixtureCus
 
 // initialize fixture
 const {
-    uniswapV3Deployer, uniswapFactory, descriptorLibrary, tokenDescriptor, positionManager, 
+    uniswapV3Deployer, uniswapFactory, descriptorLibrary, tokenDescriptor, nonfungiblePositionManager, 
     swapRouter01, swapRouter02, quoter01, quoter02, tickLens, multicall, multicall2, permit2, 
     universalRouter, uniswapV3PoolBytecode, uniswapV3PoolAbi
 } = await loadFixture(UniswapV3DeploymentFixtureCustomWETH);
@@ -429,7 +429,7 @@ const { UniswapV3MainnetForkSetup } = require("@revxchain/uniswap-v3-utils/test/
 const targetChainId = 1;
 
 const {
-    weth, uniswapFactory, descriptorLibrary, tokenDescriptor, positionManager, 
+    weth, uniswapFactory, descriptorLibrary, tokenDescriptor, nonfungiblePositionManager, 
     swapRouter01, swapRouter02, quoter01, quoter02, tickLens, multicall, multicall2, permit2, 
     universalRouter, uniswapV3PoolBytecode, uniswapV3PoolAbi
 } = await UniswapV3MainnetForkSetup(targetChainId);

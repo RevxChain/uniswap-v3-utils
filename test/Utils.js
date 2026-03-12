@@ -38,7 +38,7 @@ function getSqrtPriceX96(token0, token1, token0Amount, token1Amount) {
 async function createUniswapPool(
     operator,
     uniswapFactory,
-    positionManager,
+    nonfungiblePositionManager,
     tokenOne,
     amountOne,
     tokenTwo,
@@ -60,12 +60,12 @@ async function createUniswapPool(
     await deployedPool.connect(operator).initialize(sqrtPrice);
     await deployedPool.connect(operator).increaseObservationCardinalityNext(200n);
 
-    if (await tokenOne.allowance(operator.address, positionManager.target) < amountOne) {
-        await tokenOne.connect(operator).approve(positionManager.target, amountOne);
+    if (await tokenOne.allowance(operator.address, nonfungiblePositionManager.target) < amountOne) {
+        await tokenOne.connect(operator).approve(nonfungiblePositionManager.target, amountOne);
     }
 
-    if (await tokenTwo.allowance(operator.address, positionManager.target) < amountTwo) {
-        await tokenTwo.connect(operator).approve(positionManager.target, amountTwo);
+    if (await tokenTwo.allowance(operator.address, nonfungiblePositionManager.target) < amountTwo) {
+        await tokenTwo.connect(operator).approve(nonfungiblePositionManager.target, amountTwo);
     }
 
     let tickLower;
@@ -91,7 +91,7 @@ async function createUniswapPool(
         tickUpper = 887200;
     }
 
-    await positionManager.connect(operator).mint([
+    await nonfungiblePositionManager.connect(operator).mint([
         tokenOne.target < tokenTwo.target ? tokenOne.target : tokenTwo.target,
         tokenOne.target < tokenTwo.target ? tokenTwo.target : tokenOne.target,
         poolFee,
