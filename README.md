@@ -131,7 +131,7 @@ Hardhat fixture that deploys the complete UniswapV3 protocol from pre-compiled a
 | [UniswapInterfaceMulticall](https://www.npmjs.com/package/@uniswap/v3-periphery/v/1.4.4) | `build/@uniswap/v3-periphery-0.7/` |
 | [Multicall2](https://github.com/sky-ecosystem/multicall) | `build/sky-ecosystem/multicall/` |
 | [Permit2](https://github.com/Uniswap/permit2) | `build/@uniswap/permit2/` |
-| [UnivesalRouter](https://www.npmjs.com/package/@uniswap/universal-router/v/2.1.0) | `build/@uniswap/universal-router/` |
+| [UniversalRouter](https://www.npmjs.com/package/@uniswap/universal-router/v/2.1.0) | `build/@uniswap/universal-router/` |
 
 ### [createUniswapV3DeploymentFixtureCustomWETH()](https://github.com/RevxChain/uniswap-v3-utils/blob/main/test/UniswapV3DeploymentFixture.js#L22)
 
