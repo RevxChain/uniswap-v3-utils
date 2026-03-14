@@ -163,7 +163,7 @@ The function uses [uniswap.addresses.json](https://github.com/RevxChain/uniswap-
 > For networks where Ether is not the native asset, the `WETH` contract is used regardless. In reality, depends on the network; this is the wrapped version of the native asset.
 
 > [!WARNING]
-> Each network has a unique set of deployed contracts. For example, some networks might lack `SwapRouter01` or one of the `Multicall` contracts. Must familiarize with the [deployments](https://github.com/RevxChain/uniswap-v3-utils/blob/main/uniswap.addresses.json) of the selected network before using it.
+> Each network has a unique set of deployed contracts. For example, some networks might lack `SwapRouter01` or one of the `Multicall` contracts. Must familiarize with the [deployments](https://github.com/RevxChain/uniswap-v3-utils/blob/main/uniswap.addresses.json) of the selected network before using it. For unsupported networks or/and contracts, zero-address placeholders will be used.
 
 ---
 

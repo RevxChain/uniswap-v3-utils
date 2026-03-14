@@ -158,72 +158,80 @@ function createUniswapV3DeploymentFixtureCustomWETH(wethAddress) {
 }
 
 async function UniswapV3MainnetForkSetup(chainId) {
-
     await mine(1);
 
     const addresses = require('../uniswap.addresses.json')[chainId.toString()];
 
-    const weth = await ethers.getContractAt(require('../build/gnosis/canonical-weth/WETH9.json').abi, addresses.wethAddress);
+    const weth = await ethers.getContractAt(
+        require('../build/gnosis/canonical-weth/WETH9.json').abi,
+        addresses == undefined ? ethers.ZeroAddress : addresses.wethAddress
+    );
 
     const uniswapFactory = await ethers.getContractAt(
         require('../build/@uniswap/v3-core-0.7/contracts/UniswapV3Factory.sol/UniswapV3Factory.json').abi,
-        addresses.uniswapFactoryAddress
+        addresses == undefined ? ethers.ZeroAddress : addresses.uniswapFactoryAddress
     );
 
     const descriptorLibrary = await ethers.getContractAt(
         require('../build/@uniswap/v3-periphery-0.7/contracts/libraries/NFTDescriptor.sol/NFTDescriptor.json').abi,
-        addresses.descriptorLibraryAddress
+        addresses == undefined ? ethers.ZeroAddress : addresses.descriptorLibraryAddress
     );
 
     const tokenDescriptor = await ethers.getContractAt(
         require(
             '../build/@uniswap/v3-periphery-0.7/contracts/NonfungibleTokenPositionDescriptor.sol/NonfungibleTokenPositionDescriptor.json'
         ).abi,
-        addresses.tokenDescriptorAddress
+        addresses == undefined ? ethers.ZeroAddress : addresses.tokenDescriptorAddress
     );
 
     const nonfungiblePositionManager = await ethers.getContractAt(
         require('../build/@uniswap/v3-periphery-0.7/contracts/NonfungiblePositionManager.sol/NonfungiblePositionManager.json').abi,
-        addresses.positionManagerAddress
+        addresses == undefined ? ethers.ZeroAddress : addresses.positionManagerAddress
     );
 
     const swapRouter01 = await ethers.getContractAt(
         require('../build/@uniswap/v3-periphery-0.7/contracts/SwapRouter.sol/SwapRouter.json').abi,
-        addresses.swapRouter01Address
+        addresses == undefined ? ethers.ZeroAddress : addresses.swapRouter01Address
     );
 
     const swapRouter02 = await ethers.getContractAt(
         require('../build/@uniswap/swap-router-contracts/contracts/SwapRouter02.sol/SwapRouter02.json').abi,
-        addresses.swapRouter02Address
+        addresses == undefined ? ethers.ZeroAddress : addresses.swapRouter02Address
     );
 
     const quoter01 = await ethers.getContractAt(
         require('../build/@uniswap/v3-periphery-0.7/contracts/lens/Quoter.sol/Quoter.json').abi,
-        addresses.quoter01Address
+        addresses == undefined ? ethers.ZeroAddress : addresses.quoter01Address
     );
 
     const quoter02 = await ethers.getContractAt(
         require('../build/@uniswap/v3-periphery-0.7/contracts/lens/QuoterV2.sol/QuoterV2.json').abi,
-        addresses.quoter02Address
+        addresses == undefined ? ethers.ZeroAddress : addresses.quoter02Address
     );
 
     const tickLens = await ethers.getContractAt(
         require('../build/@uniswap/v3-periphery-0.7/contracts/lens/TickLens.sol/TickLens.json').abi,
-        addresses.tickLensAddress
+        addresses == undefined ? ethers.ZeroAddress : addresses.tickLensAddress
     );
 
     const multicall = await ethers.getContractAt(
         require('../build/@uniswap/v3-periphery-0.7/contracts/lens/UniswapInterfaceMulticall.sol/UniswapInterfaceMulticall.json').abi,
-        addresses.multicallAddress
+        addresses == undefined ? ethers.ZeroAddress : addresses.multicallAddress
     );
 
-    const multicall2 = await ethers.getContractAt(require('../build/sky-ecosystem/multicall/Multicall2.json').abi, addresses.multicall2Address);
+    const multicall2 = await ethers.getContractAt(
+        require('../build/sky-ecosystem/multicall/Multicall2.json').abi,
+        addresses == undefined ? ethers.ZeroAddress : addresses.multicall2Address
+    );
 
-    const permit2 = await ethers.getContractAt(require('../build/@uniswap/permit2/Permit2.json').abi, addresses.permit2Address);
+    const permit2 = await ethers.getContractAt(
+        require('../build/@uniswap/permit2/Permit2.json').abi,
+        addresses == undefined ? ethers.ZeroAddress : addresses.permit2Address
+    );
 
     const universalRouter = await ethers.getContractAt(
         require('../build/@uniswap/universal-router/contracts/UniversalRouter.sol/UniversalRouter.json').abi,
-        addresses.universalRouterAddress
+        addresses == undefined ? ethers.ZeroAddress : addresses.universalRouterAddress
     );
 
     return {
