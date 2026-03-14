@@ -82,6 +82,11 @@ module.exports = {
             chainId: 4326,
             accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
         },
+        worldchain: {
+            url: process.env.WORLDCHAIN_RPC_URL !== undefined ? process.env.WORLDCHAIN_RPC_URL : "https://worldchain.drpc.org",
+            chainId: 480,
+            accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+        }
     },
 
     paths: {
