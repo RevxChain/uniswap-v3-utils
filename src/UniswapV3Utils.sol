@@ -388,11 +388,13 @@ library UniswapV3Utils {
         address pool,
         uint256 tokenId
     ) internal view returns(uint256 amount0, uint256 amount1) {
+        INonfungiblePositionManagerTyped.Position memory _position = INonfungiblePositionManagerTyped(positionManager).positions(tokenId);
+
         return LiquidityAmounts.getAmountsForLiquidity(
             IUniswapV3PoolTyped(pool).slot0().tick.getSqrtRatioAtTick(),
-            INonfungiblePositionManagerTyped(positionManager).positions(tokenId).tickLower.getSqrtRatioAtTick(),
-            INonfungiblePositionManagerTyped(positionManager).positions(tokenId).tickUpper.getSqrtRatioAtTick(),
-            INonfungiblePositionManagerTyped(positionManager).positions(tokenId).liquidity
+            _position.tickLower.getSqrtRatioAtTick(),
+            _position.tickUpper.getSqrtRatioAtTick(),
+            _position.liquidity
         );
     }
 
