@@ -94,6 +94,7 @@ uniswap-v3-utils/
 ├── uniswap.addresses.json                       # Uniswap deployments per chain
 ├── hardhat.config.js                            # Hardhat configuration
 ├── solc.compilers.json                          # Per-contract compiler overrides
+├── slither.config.json                          # Slither analyzer config for CI
 ├── package.json                                 # Dependencies and package info
 └── README.md                                    # This file
 ```

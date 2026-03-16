@@ -1,0 +1,10 @@
+{
+    "detectors_to_run": "all",
+    "detectors_to_exclude": "unused-return",
+    "exclude_dependencies": true,
+    "exclude_informational": true,
+    "exclude_optimization": true,
+    "fail_on": "low",
+    "include_paths": "src/UniswapV3Utils.sol",
+    "skip_assembly": true
+}

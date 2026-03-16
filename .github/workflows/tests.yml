@@ -14,3 +14,9 @@ jobs:
             run: npx hardhat coverage
           - name: Check coverage
             run: npx istanbul check-coverage --statements 90 --branches 90 --functions 90 --lines 90
+          - name: Run Slither
+            uses: crytic/slither-action@v0.4.2
+            with:
+              solc-version: 0.8.27
+              node-version: 22.17
+              fail-on: config
