@@ -9,7 +9,7 @@ A Solidity library with various utility functions for UniswapV3 interactions —
 [![Uniswap V3](https://img.shields.io/badge/Uniswap-V3-ff007a?logo=uniswap)](https://docs.uniswap.org/contracts/v3/overview)
 [![Hardhat](https://img.shields.io/badge/Hardhat-Toolkit-yellow?logo=hardhat)](https://hardhat.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/RevxChain/uniswap-v3-utils/.github%2Fworkflows%2Ftests.yml)](https://github.com/RevxChain/uniswap-v3-utils/actions)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/RevxChain/uniswap-v3-utils/.github%2Fworkflows%2Ftests.yml?label=CI)](https://github.com/RevxChain/uniswap-v3-utils/actions)
 [![NPM Version](https://img.shields.io/npm/v/%40revxchain%2Funiswap-v3-utils?color=green)](https://www.npmjs.com/package/@revxchain/uniswap-v3-utils)
 
 
@@ -23,6 +23,7 @@ A Solidity library with various utility functions for UniswapV3 interactions —
 - [Main Features](#main-features)
 - [Project Structure](#project-structure)
 - [Key Components](#key-components)
+- [Dependencies](#dependencies)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Security Considerations](#security-considerations)
@@ -34,9 +35,9 @@ A Solidity library with various utility functions for UniswapV3 interactions —
 
 ## Overview
 
-`UniswapV3Utils` is a Solidity library that contains the most common operations needed when integrating with the [UniswapV3](https://docs.uniswap.org/contracts/v3/overview) protocol. It consolidates spot price quotes, TWAP quotes, calculation of amounts for providing liquidity and existing position, sqrtPriceX96 calculations, valid tick and accumulated fee getters into a single module. 
+`UniswapV3Utils` is a Solidity library that contains the common math operations and getters needed when integrating with the [UniswapV3](https://docs.uniswap.org/contracts/v3/overview) protocol. It consolidates spot price quotes, TWAP quotes, calculation of amounts for providing liquidity and existing position, sqrtPriceX96 calculations, valid tick and accumulated fee getters into a single module. 
 
-It also includes a [Hardhat Fixture](https://v2.hardhat.org/hardhat-runner/docs/guides/test-contracts#using-fixtures) for full local deployment of the UniswapV3 protocol and a fork setup for testing integration using a mainnet fork where UniswapV3 is deployed.
+It also includes a [Hardhat Fixture](https://v2.hardhat.org/hardhat-runner/docs/guides/test-contracts#using-fixtures) for full local deployment of the UniswapV3 protocol and a setup for testing integration using a mainnet fork.
 
 ---
 
@@ -119,20 +120,20 @@ Hardhat fixture that deploys the complete UniswapV3 protocol from pre-compiled a
 
 | Contract | Source |
 |---|---|
-| [WETH9](https://github.com/gnosis/canonical-weth) | `build/gnosis/canonical-weth/` |
-| [UniswapV3Factory](https://www.npmjs.com/package/@uniswap/v3-core/v/1.0.1) | `build/@uniswap/v3-core-0.7/` |
-| [NFTDescriptor](https://www.npmjs.com/package/@uniswap/v3-periphery/v/1.4.4) | `build/@uniswap/v3-periphery-0.7/` |
-| [NonfungibleTokenPositionDescriptor](https://www.npmjs.com/package/@uniswap/v3-periphery/v/1.4.4) | `build/@uniswap/v3-periphery-0.7/` |
-| [NonfungiblePositionManager](https://www.npmjs.com/package/@uniswap/v3-periphery/v/1.4.4) | `build/@uniswap/v3-periphery-0.7/` |
-| [SwapRouter01](https://www.npmjs.com/package/@uniswap/v3-periphery/v/1.4.4) | `build/@uniswap/v3-periphery-0.7/` |
-| [SwapRouter02](https://www.npmjs.com/package/@uniswap/swap-router-contracts/v/1.3.1) | `build/@uniswap/swap-router-contracts/` |
-| [QuoterV1](https://www.npmjs.com/package/@uniswap/v3-periphery/v/1.4.4) | `build/@uniswap/v3-periphery-0.7/` |
-| [QuoterV2](https://www.npmjs.com/package/@uniswap/v3-periphery/v/1.4.4) | `build/@uniswap/v3-periphery-0.7/` |
-| [TickLens](https://www.npmjs.com/package/@uniswap/v3-periphery/v/1.4.4) | `build/@uniswap/v3-periphery-0.7/` |
-| [UniswapInterfaceMulticall](https://www.npmjs.com/package/@uniswap/v3-periphery/v/1.4.4) | `build/@uniswap/v3-periphery-0.7/` |
-| [Multicall2](https://github.com/sky-ecosystem/multicall) | `build/sky-ecosystem/multicall/` |
-| [Permit2](https://github.com/Uniswap/permit2) | `build/@uniswap/permit2/` |
-| [UniversalRouter](https://www.npmjs.com/package/@uniswap/universal-router/v/2.1.0) | `build/@uniswap/universal-router/` |
+| [WETH9](https://github.com/gnosis/canonical-weth/blob/master/contracts/WETH9.sol) | [`build/gnosis/canonical-weth/`](https://github.com/gnosis/canonical-weth/blob/master/build/contracts/WETH9.json) |
+| [UniswapV3Factory](https://github.com/Uniswap/v3-core/blob/main/contracts/UniswapV3Factory.sol) | [`build/@uniswap/v3-core-0.7/`](https://www.npmjs.com/package/@uniswap/v3-core/v/1.0.1) |
+| [NFTDescriptor](https://github.com/Uniswap/v3-periphery/blob/main/contracts/libraries/NFTDescriptor.sol) | [`build/@uniswap/v3-periphery-0.7/`](https://www.npmjs.com/package/@uniswap/v3-periphery/v/1.4.4) |
+| [NonfungibleTokenPositionDescriptor](https://github.com/Uniswap/v3-periphery/blob/main/contracts/NonfungibleTokenPositionDescriptor.sol) | [`build/@uniswap/v3-periphery-0.7/`](https://www.npmjs.com/package/@uniswap/v3-periphery/v/1.4.4) |
+| [NonfungiblePositionManager](https://github.com/Uniswap/v3-periphery/blob/main/contracts/NonfungiblePositionManager.sol) | [`build/@uniswap/v3-periphery-0.7/`](https://www.npmjs.com/package/@uniswap/v3-periphery/v/1.4.4) |
+| [SwapRouter01](https://github.com/Uniswap/v3-periphery/blob/main/contracts/SwapRouter.sol) | [`build/@uniswap/v3-periphery-0.7/`](https://www.npmjs.com/package/@uniswap/v3-periphery/v/1.4.4) |
+| [SwapRouter02](https://github.com/Uniswap/swap-router-contracts/blob/main/contracts/SwapRouter02.sol) | [`build/@uniswap/swap-router-contracts/`](https://www.npmjs.com/package/@uniswap/swap-router-contracts/v/1.3.1) |
+| [QuoterV1](https://github.com/Uniswap/v3-periphery/blob/main/contracts/lens/Quoter.sol) | [`build/@uniswap/v3-periphery-0.7/`](https://www.npmjs.com/package/@uniswap/v3-periphery/v/1.4.4) |
+| [QuoterV2](https://github.com/Uniswap/v3-periphery/blob/main/contracts/lens/QuoterV2.sol) | [`build/@uniswap/v3-periphery-0.7/`](https://www.npmjs.com/package/@uniswap/v3-periphery/v/1.4.4) |
+| [TickLens](https://github.com/Uniswap/v3-periphery/blob/main/contracts/lens/TickLens.sol) | [`build/@uniswap/v3-periphery-0.7/`](https://www.npmjs.com/package/@uniswap/v3-periphery/v/1.4.4) |
+| [UniswapInterfaceMulticall](https://github.com/Uniswap/v3-periphery/blob/main/contracts/lens/UniswapInterfaceMulticall.sol) | [`build/@uniswap/v3-periphery-0.7/`](https://www.npmjs.com/package/@uniswap/v3-periphery/v/1.4.4) |
+| [Multicall2](https://github.com/sky-ecosystem/multicall/blob/master/src/Multicall2.sol) | [`build/sky-ecosystem/multicall/`](https://github.com/RevxChain/uniswap-v3-utils/blob/main/build/sky-ecosystem/multicall/Multicall2.json) |
+| [Permit2](https://github.com/Uniswap/permit2/blob/main/src/Permit2.sol) | [`build/@uniswap/permit2/`](https://github.com/RevxChain/uniswap-v3-utils/blob/main/build/%40uniswap/permit2/Permit2.json) |
+| [UniversalRouter](https://github.com/Uniswap/universal-router/blob/main/contracts/UniversalRouter.sol) | [`build/@uniswap/universal-router/`](https://www.npmjs.com/package/@uniswap/universal-router/v/2.1.0) |
 
 ### [createUniswapV3DeploymentFixtureCustomWETH()](https://github.com/RevxChain/uniswap-v3-utils/blob/main/test/UniswapV3DeploymentFixture.js#L22)
 
@@ -142,7 +143,7 @@ Hardhat fixture creation function that deploys the complete UniswapV3 protocol f
 
 The function uses [uniswap.addresses.json](https://github.com/RevxChain/uniswap-v3-utils/blob/main/uniswap.addresses.json) to attach to live deployments for mainnet fork testing.
 
-#### [Supported networks](https://docs.uniswap.org/contracts/v3/reference/deployments/)
+#### [V3 Supported networks](https://docs.uniswap.org/contracts/v3/reference/deployments/)
 
 | Network | Chain ID |
 |---|---|
@@ -166,6 +167,31 @@ The function uses [uniswap.addresses.json](https://github.com/RevxChain/uniswap-
 
 > [!WARNING]
 > Each network has a unique set of deployed contracts. For example, some networks might lack `SwapRouter01` or one of the `Multicall` contracts. Must familiarize with the [deployments](https://github.com/RevxChain/uniswap-v3-utils/blob/main/uniswap.addresses.json) of the selected network before using it. For unsupported networks or/and contracts, zero-address placeholders will be used.
+
+---
+
+## Dependencies
+
+### Required dependencies
+
+> [!NOTE]
+> Required to import `UniswapV3Utils` library.
+
+| Package | Version | Description |
+|---|---|---|
+| [@uniswap/v3-core](https://www.npmjs.com/package/@uniswap/v3-core/v/1.0.2-solc-0.8-simulate) | 1.0.2-solc-0.8-simulate | UniswapV3 core contracts |
+| [solmate](https://www.npmjs.com/package/solmate) | ^6.5.0 | `FixedPointMathLib` for `sqrt` function |
+
+
+### Optional dev dependencies
+
+> [!NOTE]
+> Required to import pre-made Uniswap fixtures and setups.
+
+| Package | Tag | Version | Description |
+|---|---|---|---|
+| [hardhat](https://www.npmjs.com/package/hardhat/v/2.28.6) | hh2 | ^2.28.6 | Hardhat development environment |
+| [@nomicfoundation/hardhat-toolbox](https://www.npmjs.com/package/@nomicfoundation/hardhat-toolbox/v/6.1.2) | hh2 | ^6.1.0 | Hardhat development toolkit (helpers, ethers, chai, coverage etc.) |
 
 ---
 
@@ -248,6 +274,12 @@ Run tests:
 npx hardhat test
 ```
 
+Run coverage:
+
+```bash
+npx hardhat coverage
+```
+
 ### Package
 
 ```bash
@@ -268,7 +300,8 @@ import {UniswapV3Utils} from "@revxchain/uniswap-v3-utils/src/UniswapV3Utils.sol
 
 contract MyContract {
 
-    /// @notice Calculates the output amount for a token swap using the default TWAP observation window (15 minutes).
+    /// @notice Calculates the output amount for a token swap using the default TWAP observation 
+    /// window (15 minutes).
     function getTimeWeightedAmountOut(
         address pool, 
         address tokenIn, 
@@ -277,7 +310,8 @@ contract MyContract {
         return UniswapV3Utils.getTimeWeightedAmountOut(pool, tokenIn, amountIn);
     }
 
-    /// @notice Calculates the output amount using TWAP with fallback to spot price if observation data unavailable.
+    /// @notice Calculates the output amount using TWAP with fallback to spot price if observation 
+    /// data unavailable.
     function getForceTimeWeightedAmountOut(
         address pool, 
         address tokenIn, 
@@ -286,7 +320,8 @@ contract MyContract {
         return UniswapV3Utils.getForceTimeWeightedAmountOut(pool, tokenIn, amountIn);
     }
 
-    /// @notice Calculates the output amount for a token swap using a custom TWAP observation window with optional force fallback.
+    /// @notice Calculates the output amount for a token swap using a custom TWAP observation window 
+    /// with optional force fallback.
     function getTimeWeightedAmountOut(
         address pool, 
         address tokenIn, 
@@ -336,7 +371,8 @@ contract MyContract {
         );
     }
 
-    /// @notice Calculates the proportional amounts of both tokens required to provide liquidity within a specified price range.
+    /// @notice Calculates the proportional amounts of both tokens required to provide liquidity
+    /// within a specified price range.
     function getProportionalAmounts(
         address pool,
         uint256 amount0,
@@ -353,18 +389,30 @@ contract MyContract {
         );
     }
 
-    /// @notice Finds the nearest valid tick for a given square root price, aligned to the pool's tick spacing.
-    function getValidTick(uint160 sqrtPriceX96, int24 tickSpacing) external pure returns(int24 validTick) {
+    /// @notice Finds the nearest valid tick for a specified square root price, aligned 
+    /// to the specified tick spacing.
+    function getValidTick(
+        uint160 sqrtPriceX96, 
+        int24 tickSpacing
+    ) external pure returns(int24 validTick) {
         return UniswapV3Utils.getValidTick(sqrtPriceX96, tickSpacing);
     }
 
-    /// @notice Finds the nearest valid tick aligned to the given tick spacing.
-    function getValidTick(int24 tick, int24 tickSpacing) external pure returns(int24 validTick) {
+    /// @notice Finds the nearest valid tick for a specified tick, aligned to the 
+    /// specified tick spacing.
+    function getValidTick(
+        int24 tick, 
+        int24 tickSpacing
+    ) external pure returns(int24 validTick) {
         return UniswapV3Utils.getValidTick(tick, tickSpacing);
     }
 
-    /// @notice Calculates the effective square root of price (in Q64.96 format) from the ratio of two token amounts.
-    function getSqrtPriceX96(uint256 amount0, uint256 amount1) external pure returns(uint160 sqrtPriceX96) {
+    /// @notice Calculates the effective square root of price (in Q64.96 format) from the ratio 
+    /// of two token amounts.
+    function getSqrtPriceX96(
+        uint256 amount0, 
+        uint256 amount1
+    ) external pure returns(uint160 sqrtPriceX96) {
         return UniswapV3Utils.getSqrtPriceX96(amount0, amount1);
     }
 
@@ -377,7 +425,8 @@ contract MyContract {
         return UniswapV3Utils.getAccumulatedFees(positionManager, pool, tokenId);
     }
 
-    /// @notice Calculates the principal token amounts (amount0 and amount1) represented by a position's liquidity.
+    /// @notice Calculates the principal token amounts (amount0 and amount1) represented 
+    /// by a position's liquidity.
     function getPositionLiquidity(
         address positionManager, 
         address pool, 
@@ -440,7 +489,7 @@ const {
 
 ## Security Considerations
 
-- **No input validation.** `UniswapV3Utils` does not verify the correctness of any input. Passing an address that is not a valid `UniswapV3Pool`, or a `tokenIn` that is not one of the pool's tokens, may result in silent zero returns rather than a revert. Always validate inputs externally.
+- **No input validation.** `UniswapV3Utils` does not verify the correctness of any input. Passing an address that is not a valid `UniswapV3Pool`, or a `tokenIn` that is not one of the pool's tokens, may result in silent zero returns rather than a revert. You MUST validate inputs externally.
 
 - **TWAP manipulation resistance.** The default TWAP window (`DEFAULT_TWAP_AGE = 15 minutes`) provides protection against single-block sandwich attacks, but longer windows provide stronger guarantees. Always assess the time window relative to your protocol's risk tolerance.
 
@@ -465,13 +514,13 @@ See [LICENSE](LICENSE) file for full terms.
 ## Contributing
 
 Contributions welcome! Please:
-1. Fork the repository
-2. Create a feature branch
-3. Add tests for new functionality
-4. Submit a pull request
+1. Fork the repository;
+2. Create a feature branch;
+3. Add tests for new functionality;
+4. Submit a pull request.
 
 ---
 
 ## Support
 
-- [**GitHub Issues**](https://github.com/RevxChain/uniswap-v3-utils/issues) - Report bugs
+- [**GitHub Issues**](https://github.com/RevxChain/uniswap-v3-utils/issues) - Report bugs and/or proposals.
