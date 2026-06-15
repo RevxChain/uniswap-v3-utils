@@ -238,5 +238,21 @@
         "multicall2Address": "0x0000000000000000000000000000000000000000",
         "permit2Address": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
         "universalRouterAddress": "0xDa00aE15d3A71466517129255255db7c0c0956d3"
+    },
+    "4217": {
+        "wethAddress": "0x0000000000000000000000000000000000000000",
+        "uniswapFactoryAddress": "0x24a3d4757E330890A8b8978028c9e58E04611fd6",
+        "descriptorLibraryAddress": "0x0000000000000000000000000000000000000000",
+        "tokenDescriptorAddress": "0x42f22Ca73a77Ff67Bf4Ba0480dd060eA0e9864AF",
+        "positionManagerAddress": "0xb71c33f096ceabdc0229110e0d76a6382d01c633",
+        "swapRouter01Address": "0x6A3988d2366ad79917a2399f18a1A82B157470e1",
+        "swapRouter02Address": "0x7e9D53081e961201837336BcD81f52aE92691a8f",
+        "quoter01Address": "0x0000000000000000000000000000000000000000",
+        "quoter02Address": "0x53Ab5D7A69Db158F621B43eE70423dA1e1403C2A",
+        "tickLensAddress": "0x95CB27f323A03B03528096A527eE75704DB28ef5",
+        "multicallAddress": "0x64eb6294fd6072B2C20D31A54e39D5d3BF69D982",
+        "multicall2Address": "0x0000000000000000000000000000000000000000",
+        "permit2Address": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
+        "universalRouterAddress": "0xA2Dc7d0266f0CC50b3eEaF36c9BFCeCFF1BEea91"
     }
 }

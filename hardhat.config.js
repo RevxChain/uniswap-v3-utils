@@ -91,6 +91,11 @@ module.exports = {
             url: process.env.XLAYER_RPC_URL !== undefined ? process.env.XLAYER_RPC_URL : "https://xlayer.drpc.org",
             chainId: 196,
             accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+        },
+        tempo: {
+            url: process.env.TEMPO_RPC_URL !== undefined ? process.env.TEMPO_RPC_URL : "https://rpc.mainnet.tempo.xyz",
+            chainId: 4217,
+            accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
         }
     },
 
