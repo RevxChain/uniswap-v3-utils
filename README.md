@@ -161,6 +161,7 @@ The function uses [uniswap.addresses.json](https://github.com/RevxChain/uniswap-
 | Monad | 143 |
 | MegaETH | 4326 |
 | WorldChain | 480 |
+| XLayer | 196 |
 
 > [!WARNING]
 > For networks where Ether is not the native asset, the `WETH` contract is used regardless. In reality, depends on the network; this is the wrapped version of the native asset.

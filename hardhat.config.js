@@ -86,6 +86,11 @@ module.exports = {
             url: process.env.WORLDCHAIN_RPC_URL !== undefined ? process.env.WORLDCHAIN_RPC_URL : "https://worldchain.drpc.org",
             chainId: 480,
             accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+        },
+        xlayer: {
+            url: process.env.XLAYER_RPC_URL !== undefined ? process.env.XLAYER_RPC_URL : "https://xlayer.drpc.org",
+            chainId: 196,
+            accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
         }
     },
 
